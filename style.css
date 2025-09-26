@@ -721,3 +721,48 @@ footer {
     border-radius: 4px;
     border: 1px dashed #30363d;
 }
+
+/* Credits Section */
+.credits {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #30363d;
+    text-align: center;
+}
+
+.credits p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #8b949e;
+}
+
+.youtube-link {
+    color: #ff4444;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    background: rgba(255, 68, 68, 0.1);
+    border: 1px solid rgba(255, 68, 68, 0.2);
+}
+
+.youtube-link:hover {
+    background: rgba(255, 68, 68, 0.2);
+    border-color: #ff4444;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(255, 68, 68, 0.3);
+}
+
+.youtube-icon {
+    font-size: 1.1rem;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}

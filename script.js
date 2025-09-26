@@ -30,7 +30,8 @@ const LANGUAGE_DATA = {
         elevationMil: "มุมยกปืน (mil)",
         timeSec: "เวลา (วิ)",
         dispersion: "การกระจาย",
-        footer: "เครื่องคำนวณมอร์ต้าร์ ARMA REFORGER v1.0 | อิงจากข้อมูลลิสติกในเกม"
+        footer: "เครื่องคำนวณมอร์ต้าร์ ARMA REFORGER v1.0 | อิงจากข้อมูลลิสติกในเกม",
+        createdBy: "สร้างโดย:"
     },
     en: {
         title: "Mortar Calculator",
@@ -62,7 +63,8 @@ const LANGUAGE_DATA = {
         elevationMil: "Elevation (mil)",
         timeSec: "Time (sec)",
         dispersion: "Dispersion",
-        footer: "ARMA REFORGER Mortar Calculator v1.0 | Based on in-game ballistic data"
+        footer: "ARMA REFORGER Mortar Calculator v1.0 | Based on in-game ballistic data",
+        createdBy: "Created by:"
     }
 };
 
