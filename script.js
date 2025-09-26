@@ -1248,7 +1248,11 @@ class MortarCalculator {
             const excessHeight = absoluteHeightDiff - 100;
             // นำส่วนเกินไปบวกกับระยะทาง (ไม่ปัด)
             const rangeAdjustment = excessHeight;
-            adjustedDistance = distance + rangeAdjustment;
+            if (heightDiff > 0) {
+                adjustedDistance = distance + rangeAdjustment;
+            } else {
+                adjustedDistance = distance - rangeAdjustment;
+            }
             // ความต่างความสูงที่ใช้คำนวณ = 100 หรือ -100 เท่านั้น
             adjustedHeightDiff = heightDiff > 0 ? 100 : -100;
             calculationNote = `สูตรปรับแล้ว: ระยะทาง ${distance}m + ${rangeAdjustment}m = ${adjustedDistance}m, ความสูง ${adjustedHeightDiff}m (ตัดไว้ 100m)`;
