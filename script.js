@@ -31,7 +31,12 @@ const LANGUAGE_DATA = {
         timeSec: "เวลา (วิ)",
         dispersion: "การกระจาย",
         footer: "เครื่องคำนวณมอร์ต้าร์ ARMA REFORGER v1.0 | อิงจากข้อมูลลิสติกในเกม",
-        createdBy: "สร้างโดย:"
+        createdBy: "สร้างโดย:",
+        subPosition: "ตำแหน่งย่อย (Numpad):",
+        numpadHelp: "เลือกตำแหน่งย่อยภายในช่อง Grid",
+        toggleNumpad: "เปิด/ปิด",
+        numpadDisabled: "⚠️ ปิด Numpad: พิกัดละเอียดเกินไป (มากกว่า 3 หลัก)",
+        numpadWarning: "⚠️ คำเตือน: พิกัดละเอียดเกินไป แนะนำให้ปิด Numpad"
     },
     en: {
         title: "Mortar Calculator",
@@ -64,7 +69,12 @@ const LANGUAGE_DATA = {
         timeSec: "Time (sec)",
         dispersion: "Dispersion",
         footer: "ARMA REFORGER Mortar Calculator v1.0 | Based on in-game ballistic data",
-        createdBy: "Created by:"
+        createdBy: "Created by:",
+        subPosition: "Sub-position (Numpad):",
+        numpadHelp: "Select target sub-position within grid square",
+        toggleNumpad: "Toggle",
+        numpadDisabled: "⚠️ Numpad disabled: Coordinates too precise (>3 digits)",
+        numpadWarning: "⚠️ Warning: Coordinates too precise, recommend disabling Numpad"
     }
 };
 
@@ -706,6 +716,7 @@ class MortarCalculator {
         this.currentCharge = 0;               // ระดับประจุ (Charge)
         this.initializeElements();
         this.bindEvents();
+        this.setupNumpadSelection();
         this.loadInitialData();
     }
 
@@ -739,6 +750,15 @@ class MortarCalculator {
         // Table elements
         this.chargeTabsEl = document.getElementById('charge-tabs');
         this.ballisticTbody = document.getElementById('ballistic-tbody');
+        
+        // Numpad elements
+        this.numpadButtons = document.querySelectorAll('.numpad-btn');
+        this.numpadSection = document.getElementById('numpad-section');
+        this.numpadToggle = document.getElementById('numpad-toggle');
+        this.numpadStatus = document.getElementById('numpad-status');
+        this.currentNumpad = 5; // Default center position
+        this.numpadEnabled = true; // Default enabled
+        this.manualToggle = false; // Track if user manually toggled
     }
 
     bindEvents() {
@@ -784,8 +804,145 @@ class MortarCalculator {
         });
     }
 
+    setupNumpadSelection() {
+        // Numpad selection
+        this.numpadButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (!this.numpadEnabled) return;
+                
+                // Remove active class from all buttons
+                this.numpadButtons.forEach(b => b.classList.remove('active'));
+                
+                // Add active class to clicked button
+                e.target.classList.add('active');
+                
+                // Update current numpad position
+                this.currentNumpad = parseInt(e.target.dataset.numpad);
+                
+                // Recalculate if inputs are valid
+                if (this.validateInputs()) {
+                    this.calculate();
+                }
+            });
+        });
+
+        // Toggle button
+        this.numpadToggle.addEventListener('click', () => {
+            this.toggleNumpad();
+        });
+
+        // Monitor coordinate inputs for precision
+        this.targetX.addEventListener('input', () => this.checkCoordinatePrecision());
+        this.targetY.addEventListener('input', () => this.checkCoordinatePrecision());
+    }
+
+    toggleNumpad() {
+        this.numpadEnabled = !this.numpadEnabled;
+        this.manualToggle = true; // Mark as manually toggled
+        this.updateNumpadState();
+        
+        // Hide auto-disable status message when manually enabled
+        if (this.numpadEnabled) {
+            this.showNumpadStatus(false);
+        }
+        
+        // Recalculate if inputs are valid
+        if (this.validateInputs()) {
+            this.calculate();
+        }
+    }
+
+    checkCoordinatePrecision() {
+        const targetX = this.targetX.value;
+        const targetY = this.targetY.value;
+        
+        // Check if coordinates have more than 3 decimal places or are longer than standard grid format
+        const hasPreciseX = targetX && (targetX.includes('.') || targetX.length > 5);
+        const hasPreciseY = targetY && (targetY.includes('.') || targetY.length > 5);
+        
+        if (hasPreciseX || hasPreciseY) {
+            // Only auto-disable if user hasn't manually enabled it
+            if (this.numpadEnabled && !this.manualToggle) {
+                this.numpadEnabled = false;
+                this.updateNumpadState();
+                this.showNumpadStatus(true, false); // Show disable message
+            } else if (this.numpadEnabled && this.manualToggle) {
+                // Show warning but don't auto-disable
+                this.showNumpadStatus(true, true); // Show warning message
+            }
+        } else {
+            // Reset manual toggle flag and hide status when coordinates are normal
+            this.manualToggle = false;
+            this.showNumpadStatus(false);
+            
+            // Re-enable numpad if it was auto-disabled
+            if (!this.numpadEnabled) {
+                this.numpadEnabled = true;
+                this.updateNumpadState();
+            }
+        }
+    }
+
+    updateNumpadState() {
+        if (this.numpadEnabled) {
+            this.numpadSection.classList.remove('disabled');
+            this.numpadToggle.classList.add('active');
+        } else {
+            this.numpadSection.classList.add('disabled');
+            this.numpadToggle.classList.remove('active');
+        }
+    }
+
+    showNumpadStatus(show, isWarning = false) {
+        if (show) {
+            const texts = LANGUAGE_DATA[currentLanguage];
+            const messageKey = isWarning ? 'numpadWarning' : 'numpadDisabled';
+            const messageEl = this.numpadStatus.querySelector('small');
+            
+            if (messageEl) {
+                messageEl.textContent = texts[messageKey];
+            }
+            
+            // Add appropriate CSS class
+            if (isWarning) {
+                this.numpadStatus.classList.add('warning');
+            } else {
+                this.numpadStatus.classList.remove('warning');
+            }
+            
+            this.numpadStatus.classList.add('show');
+        } else {
+            this.numpadStatus.classList.remove('show');
+            this.numpadStatus.classList.remove('warning');
+        }
+    }
+
+    getNumpadOffset(numpadPosition) {
+        // Convert numpad position (1-9) to coordinate offsets
+        // Each grid square is 100m x 100m
+        // Numpad layout:
+        // 7 8 9
+        // 4 5 6  
+        // 1 2 3
+        
+        const offsets = {
+            1: { x: -33.33, y: -33.33 },  // Bottom-left
+            2: { x: 0, y: -33.33 },       // Bottom-center
+            3: { x: 33.33, y: -33.33 },   // Bottom-right
+            4: { x: -33.33, y: 0 },       // Middle-left
+            5: { x: 0, y: 0 },            // Center (default)
+            6: { x: 33.33, y: 0 },        // Middle-right
+            7: { x: -33.33, y: 33.33 },   // Top-left
+            8: { x: 0, y: 33.33 },        // Top-center
+            9: { x: 33.33, y: 33.33 }     // Top-right
+        };
+        
+        return offsets[numpadPosition] || { x: 0, y: 0 };
+    }
+
     loadInitialData() {
         this.updateShellInfo(); // Initialize shell info
+        this.updateNumpadState(); // Initialize numpad state
         this.createChargeTabs();
         this.loadBallisticData();
         this.updateGridReferences();
@@ -1217,13 +1374,16 @@ class MortarCalculator {
             alt: parseInt(this.weaponAlt.value)
         };
 
+        // Get numpad offset for target position (only if numpad is enabled)
+        const numpadOffset = this.numpadEnabled ? this.getNumpadOffset(this.currentNumpad) : { x: 0, y: 0 };
+        
         const target = {
-            x: parseInt(this.targetX.value),
-            y: parseInt(this.targetY.value),
+            x: parseFloat(this.targetX.value) + numpadOffset.x,
+            y: parseFloat(this.targetY.value) + numpadOffset.y,
             alt: parseInt(this.targetAlt.value)
         };
 
-        // คำนวณระยะทางและทิศทางโดยใช้พิกัดตาราง (Grid Coordinates)
+        // คำนวณระยะทางและทิศทางโดยใช้พิกัดตาราง (Grid Coordinates) พร้อม Numpad offset
         const distance = this.calculateDistance(weapon.x, weapon.y, target.x, target.y);
         const azimuthDegrees = this.calculateAzimuth(weapon.x, weapon.y, target.x, target.y);
         const azimuthMils = this.degreesToMils(azimuthDegrees);
@@ -1300,6 +1460,9 @@ class MortarCalculator {
             </div>
             <div class="info-item">
                 <strong>ประเภทมอร์ต้าร์:</strong> ${this.currentMortarType === 'mod' ? 'MOD Adult Mortars' : 'Original Game'}
+            </div>
+            <div class="info-item">
+                <strong>ตำแหน่งย่อย (Numpad):</strong> ${this.numpadEnabled ? this.currentNumpad : 'ปิดใช้งาน'}
             </div>
             <div class="info-item physics-info">
                 <strong>📊 ข้อมูลการคำนวณจาก BALLISTIC_DATA:</strong>

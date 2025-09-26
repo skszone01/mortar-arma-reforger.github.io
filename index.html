@@ -100,6 +100,35 @@
                             <span class="grid-value" id="target-grid-ref">-</span>
                         </div>
                     </div>
+                    
+                    <!-- Numpad for Target Sub-position -->
+                    <div class="numpad-section" id="numpad-section">
+                        <div class="numpad-header">
+                            <label class="numpad-label" data-lang-key="subPosition">Sub-position (Numpad):</label>
+                            <button type="button" class="numpad-toggle-btn active" id="numpad-toggle">
+                                <span class="toggle-icon">🔢</span>
+                                <span class="toggle-text"></span>
+                            </button>
+                        </div>
+                        <div class="numpad-grid">
+                            <button type="button" class="numpad-btn" data-numpad="7">7</button>
+                            <button type="button" class="numpad-btn" data-numpad="8">8</button>
+                            <button type="button" class="numpad-btn" data-numpad="9">9</button>
+                            <button type="button" class="numpad-btn" data-numpad="4">4</button>
+                            <button type="button" class="numpad-btn active" data-numpad="5">5</button>
+                            <button type="button" class="numpad-btn" data-numpad="6">6</button>
+                            <button type="button" class="numpad-btn" data-numpad="1">1</button>
+                            <button type="button" class="numpad-btn" data-numpad="2">2</button>
+                            <button type="button" class="numpad-btn" data-numpad="3">3</button>
+                        </div>
+                        <div class="numpad-info">
+                            <small data-lang-key="numpadHelp">Select target sub-position within grid square</small>
+                        </div>
+                        <div class="numpad-status" id="numpad-status">
+                            <small>⚠️ Numpad disabled: Coordinates too precise (>3 digits)</small>
+                        </div>
+                    </div>
+                    
                     <div class="form-group">
                         <label for="target-alt" data-lang-key="altitude">Altitude (m):</label>
                         <input type="number" id="target-alt" step="1" placeholder="300">
