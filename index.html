@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARMA REFORGER - Mortar Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>⚡ ARMA REFORGER</h1>
+                <p data-lang-key="title">Mortar Calculator</p>
+            </div>
+            <div class="language-selector">
+                <button class="lang-btn active" data-lang="th">🇹🇭 ไทย</button>
+                <button class="lang-btn" data-lang="en">🇺🇸 English</button>
+            </div>
+        </header>
+
+        <main>
+            <!-- Mortar Type Selection -->
+            <section class="mortar-type-section">
+                <h2 data-lang-key="mortarType">🎯 Mortar Type</h2>
+                <div class="mortar-type-selector">
+                    <label class="type-option">
+                        <input type="radio" name="mortar-type" value="original" checked>
+                        <span class="checkmark"></span>
+                        <span class="label-text" data-lang-key="originalGame">Original Game</span>
+                    </label>
+                    <label class="type-option">
+                        <input type="radio" name="mortar-type" value="mod">
+                        <span class="checkmark"></span>
+                        <span class="label-text" data-lang-key="modMortars">[MOD] Adult Mortars</span>
+                    </label>
+                </div>
+            </section>
+
+            <!-- Shell Selection -->
+            <section class="shell-selection">
+                <h2 data-lang-key="shellType">💥 Shell Type</h2>
+                <div class="shell-buttons">
+                    <button class="shell-btn active" data-shell="M821">M821</button>
+                    <button class="shell-btn" data-shell="M819">M819</button>
+                    <button class="shell-btn" data-shell="M853A1">M853A1</button>
+                </div>
+                <div class="shell-info">
+                    <span class="shell-type" data-lang-key="heShell">HE shell</span>
+                </div>
+            </section>
+
+            <!-- Input Section -->
+            <div class="input-section">
+                <div class="position-card weapon-position">
+                    <div class="card-header">
+                        <h3 data-lang-key="weaponPosition">📍 Weapon Position</h3>
+                        <div class="indicator" data-lang-key="weapon">WEAPON</div>
+                    </div>
+                    <div class="coordinate-group">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="weapon-x" data-lang-key="gridX">Grid X (0-20000):</label>
+                                <input type="number" id="weapon-x" min="0" max="20000" step="1" placeholder="10000">
+                            </div>
+                            <div class="form-group">
+                                <label for="weapon-y" data-lang-key="gridY">Grid Y (0-20000):</label>
+                                <input type="number" id="weapon-y" min="0" max="20000" step="1" placeholder="10000">
+                            </div>
+                        </div>
+                        <div class="grid-display" id="weapon-grid-display">
+                            <span class="grid-label" data-lang-key="gridReference">Grid Reference:</span>
+                            <span class="grid-value" id="weapon-grid-ref">-</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="weapon-alt" data-lang-key="altitude">Altitude (m):</label>
+                        <input type="number" id="weapon-alt" step="1" placeholder="250">
+                    </div>
+                </div>
+
+                <div class="position-card target-position">
+                    <div class="card-header">
+                        <h3 data-lang-key="targetPosition">🎯 Target Position</h3>
+                        <div class="indicator" data-lang-key="target">TARGET</div>
+                    </div>
+                    <div class="coordinate-group">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="target-x" data-lang-key="gridX">Grid X (0-20000):</label>
+                                <input type="number" id="target-x" min="0" max="20000" step="1" placeholder="10500">
+                            </div>
+                            <div class="form-group">
+                                <label for="target-y" data-lang-key="gridY">Grid Y (0-20000):</label>
+                                <input type="number" id="target-y" min="0" max="20000" step="1" placeholder="9800">
+                            </div>
+                        </div>
+                        <div class="grid-display" id="target-grid-display">
+                            <span class="grid-label" data-lang-key="gridReference">Grid Reference:</span>
+                            <span class="grid-value" id="target-grid-ref">-</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="target-alt" data-lang-key="altitude">Altitude (m):</label>
+                        <input type="number" id="target-alt" step="1" placeholder="300">
+                    </div>
+                </div>
+            </div>
+
+            <button id="calculate-btn" class="calculate-button" data-lang-key="calculate">🧮 CALCULATE</button>
+
+            <!-- Results Section -->
+            <section class="results-section" id="results-section">
+                <h2 data-lang-key="firingSolution">📊 FIRING SOLUTION</h2>
+                <div class="result-grid">
+                    <div class="result-item distance-result">
+                        <label data-lang-key="distance">Distance:</label>
+                        <span id="distance">-</span>
+                    </div>
+                    <div class="result-item azimuth-result">
+                        <label data-lang-key="azimuth">Azimuth:</label>
+                        <span id="azimuth">-</span>
+                    </div>
+                    <div class="result-item elevation-result">
+                        <label data-lang-key="elevation">Elevation:</label>
+                        <span id="elevation">-</span>
+                    </div>
+                    <div class="result-item charge-result">
+                        <label data-lang-key="charge">Charge:</label>
+                        <span id="charge">-</span>
+                    </div>
+                    <div class="result-item time-result">
+                        <label data-lang-key="timeOfFlight">Time of Flight:</label>
+                        <span id="time-flight">-</span>
+                    </div>
+                    <div class="result-item height-result">
+                        <label data-lang-key="heightDifference">Height Difference:</label>
+                        <span id="height-diff">-</span>
+                    </div>
+                </div>
+
+                <!-- Additional Info -->
+                <div class="additional-info" id="additional-info">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Ballistic Tables -->
+            <section class="ballistic-section">
+                <h2 data-lang-key="ballisticData">📋 Ballistic Data</h2>
+                <div class="charge-tabs" id="charge-tabs">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                <div class="table-container">
+                    <table id="ballistic-table">
+                        <thead>
+                            <tr>
+                                <th data-lang-key="range">Range (m)</th>
+                                <th data-lang-key="elevationMil">Elevation (mil)</th>
+                                <th data-lang-key="timeSec">Time (sec)</th>
+                                <th data-lang-key="dispersion">Dispersion</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ballistic-tbody">
+                            <!-- Will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p data-lang-key="footer">ARMA REFORGER Mortar Calculator v1.0 | Based on in-game ballistic data</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
