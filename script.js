@@ -1246,8 +1246,9 @@ class MortarCalculator {
         if (absoluteHeightDiff > 100) {
             // ส่วนที่เกิน 100 เมตร
             const excessHeight = absoluteHeightDiff - 100;
-            // นำส่วนเกินไปบวกกับระยะทาง (ไม่ปัด)
+            // นำส่วนเกินไปบวกหรือลบกับระยะทาง (ไม่ปัด)
             const rangeAdjustment = excessHeight;
+            let sign = heightDiff > 0 ? '+' : '-';
             if (heightDiff > 0) {
                 adjustedDistance = distance + rangeAdjustment;
             } else {
@@ -1255,7 +1256,7 @@ class MortarCalculator {
             }
             // ความต่างความสูงที่ใช้คำนวณ = 100 หรือ -100 เท่านั้น
             adjustedHeightDiff = heightDiff > 0 ? 100 : -100;
-            calculationNote = `สูตรปรับแล้ว: ระยะทาง ${distance}m + ${rangeAdjustment}m = ${adjustedDistance}m, ความสูง ${adjustedHeightDiff}m (ตัดไว้ 100m)`;
+            calculationNote = `สูตรปรับแล้ว: ระยะทาง ${distance}m ${sign} ${rangeAdjustment}m = ${adjustedDistance}m, ความสูง ${adjustedHeightDiff}m (ตัดไว้ 100m)`;
         }
         
         // เลือกประจุที่เหมาะสมตามระยะทางที่ปรับแล้ว
