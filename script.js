@@ -32,11 +32,7 @@ const LANGUAGE_DATA = {
         timeSec: "เวลา (วิ)",
         dispersion: "การกระจาย",
         footer: "เครื่องคำนวณมอร์ต้าร์ ARMA REFORGER v1.0 | อิงจากข้อมูลลิสติกในเกม",
-        createdBy: "สร้างโดย:",
-        heightWarningTitle: "คำเตือน: การชดเชยความสูง",
-        heightWarningDeviation: "ความเพี้ยนของกระสุน:",
-        heightWarningCause: "สาเหตุ: ผลกระทบจากแรงโน้มถ่วง ความต้านอากาศ และการคำนวณที่ซับซ้อน",
-        heightWarningRecommendation: "คำแนะนำ:"
+        createdBy: "สร้างโดย:"
     },
     en: {
         title: "Mortar Calculator",
@@ -70,11 +66,7 @@ const LANGUAGE_DATA = {
         timeSec: "Time (sec)",
         dispersion: "Dispersion",
         footer: "ARMA REFORGER Mortar Calculator v1.0 | Based on in-game ballistic data",
-        createdBy: "Created by:",
-        heightWarningTitle: "Warning: Height Compensation",
-        heightWarningDeviation: "Shell Deviation:",
-        heightWarningCause: "Cause: Effects of gravity, air resistance, and complex calculations",
-        heightWarningRecommendation: "Recommendation:"
+        createdBy: "Created by:"
     }
 };
 
@@ -95,14 +87,6 @@ function switchLanguage(lang) {
     
     // Save preference to localStorage
     localStorage.setItem('preferredLanguage', lang);
-    
-    // Update height warning if calculator exists and inputs are valid
-    if (window.mortarCalculator && window.mortarCalculator.weaponAlt && window.mortarCalculator.targetAlt) {
-        if (window.mortarCalculator.weaponAlt.value && window.mortarCalculator.targetAlt.value) {
-            const heightDiff = parseInt(window.mortarCalculator.targetAlt.value) - parseInt(window.mortarCalculator.weaponAlt.value);
-            window.mortarCalculator.updateHeightWarning(heightDiff);
-        }
-    }
 }
 
 function updateLanguageDisplay() {
@@ -768,13 +752,6 @@ class MortarCalculator {
          this.targetX, this.targetY, this.targetAlt].forEach(input => {
             input.addEventListener('input', () => {
                 this.updateGridReferences();
-                
-                // อัพเดทคำเตือนความสูงแบบ real-time
-                if (this.weaponAlt.value && this.targetAlt.value) {
-                    const heightDiff = parseInt(this.targetAlt.value) - parseInt(this.weaponAlt.value);
-                    this.updateHeightWarning(heightDiff);
-                }
-                
                 if (this.validateInputs()) {
                     this.calculate();
                 }
@@ -901,80 +878,46 @@ class MortarCalculator {
         return BALLISTIC_DATA[this.currentMortarType]?.[this.currentShell]?.[this.currentCharge] || [];
     }
 
-    // Select optimal charge/ring based on distance - ปรับปรุงให้เลือกได้แม่นยำขึ้น
+    // Select optimal charge/ring based on distance to minimize compensation
     selectOptimalCharge(targetDistance) {
         const shellData = BALLISTIC_DATA[this.currentMortarType]?.[this.currentShell];
         if (!shellData) return this.currentCharge;
 
         let bestCharge = this.currentCharge;
         let bestScore = Infinity;
-        let chargeOptions = [];
 
-        // ตรวจสอบแต่ละ Charge ว่าสามารถยิงระยะนี้ได้หรือไม่
+        // Check each available charge/ring
         Object.keys(shellData).forEach(charge => {
             const chargeData = shellData[charge];
             if (!chargeData || chargeData.length === 0) return;
 
-            // กรองข้อมูลที่ใช้ได้ (dispersion !== "0m")
+            // Filter out invalid data (dispersion = "0m")
             const validData = chargeData.filter(item => item.dispersion !== "0m");
             if (validData.length === 0) return;
 
-            // หาระยะทางต่ำสุดและสูงสุดของ Charge นี้
+            // Find if target distance falls within this charge's effective range
             const minRange = Math.min(...validData.map(item => item.range));
             const maxRange = Math.max(...validData.map(item => item.range));
 
-            // คำนวณคะแนนสำหรับ Charge นี้
             let score;
-            let withinRange = false;
-            
             if (targetDistance >= minRange && targetDistance <= maxRange) {
-                // ระยะทางอยู่ในช่วงที่ยิงได้
-                withinRange = true;
-                // ให้คะแนนตามความใกล้เคียงกับจุดกลางของช่วง
-                const midRange = (minRange + maxRange) / 2;
-                score = Math.abs(targetDistance - midRange) / (maxRange - minRange);
-                
-                // เพิ่มน้ำหนักให้ Charge ที่ต่ำกว่า (ประหยัดกระสุน)
-                score += parseInt(charge) * 0.1;
+                // Distance is within range - perfect score is 0
+                score = 0;
             } else {
-                // ระยะทางอยู่นอกช่วงที่ยิงได้
-                withinRange = false;
+                // Distance is outside range - calculate how far outside
                 if (targetDistance < minRange) {
-                    score = 1000 + (minRange - targetDistance); // เพิ่มค่าคงที่สูงสำหรับนอกช่วง
+                    score = minRange - targetDistance;
                 } else {
-                    score = 1000 + (targetDistance - maxRange);
+                    score = targetDistance - maxRange;
                 }
             }
 
-            chargeOptions.push({
-                charge: parseInt(charge),
-                score: score,
-                withinRange: withinRange,
-                minRange: minRange,
-                maxRange: maxRange
-            });
-        });
-
-        // เรียงลำดับตามคะแนน - ให้ความสำคัญกับ Charge ที่อยู่ในช่วงก่อน
-        chargeOptions.sort((a, b) => {
-            if (a.withinRange && !b.withinRange) return -1;
-            if (!a.withinRange && b.withinRange) return 1;
-            return a.score - b.score;
-        });
-
-        // สำหรับระยะ 1106m ที่มีการทดสอบจริง ให้ปรับ logic เป็นพิเศษ
-        if (targetDistance >= 1000 && targetDistance <= 1200) {
-            // ระยะประมาณ 1100m ควรใช้ Charge 1 ตามการทดสอบ
-            const charge1Option = chargeOptions.find(opt => opt.charge === 1);
-            if (charge1Option && charge1Option.withinRange) {
-                return 1;
+            // Prefer charges with target distance within range, then closest ranges
+            if (score < bestScore) {
+                bestScore = score;
+                bestCharge = parseInt(charge);
             }
-        }
-
-        // เลือก Charge ที่ดีที่สุด
-        if (chargeOptions.length > 0) {
-            bestCharge = chargeOptions[0].charge;
-        }
+        });
 
         return bestCharge;
     }
@@ -1134,8 +1077,8 @@ class MortarCalculator {
     }
 
     // คำนวณค่าชดเชยมุมยกปืนสำหรับความแตกต่างของระดับความสูง
-    // ปรับปรุงอัลกอริทึมให้แม่นยำขึ้น โดยเฉพาะการจัดการความสูงต่างกันมาก (100m+)
-    calculateElevationCorrection(heightDiff, ballisticData, distance) {
+    // ใช้ค่า dispersion จาก BALLISTIC_DATA เป็นฐานในการคำนวณ
+    calculateElevationCorrection(heightDiff, ballisticData) {
         // ตรวจสอบว่ามีข้อมูล ballistic data หรือไม่
         if (!ballisticData || !ballisticData.dispersion) {
             return 0;
@@ -1149,59 +1092,9 @@ class MortarCalculator {
             return 0;
         }
         
-        // ปรับปรุงการคำนวณตามผลการทดสอบจริง
-        const absHeightDiff = Math.abs(heightDiff);
-        let correction = 0;
-        
-        if (absHeightDiff <= 25) {
-            // ความสูงต่างกันน้อยมาก - ใช้สูตรพื้นฐานแบบอนุรักษ์
-            correction = (dispersionValue / 250) * heightDiff;
-        } else if (absHeightDiff <= 50) {
-            // ความสูงต่างกันน้อย - ปรับปรุงให้อนุรักษ์มากขึ้น
-            correction = (dispersionValue / 200) * heightDiff;
-        } else if (absHeightDiff <= 100) {
-            // ความสูงต่างกันปานกลาง - ใช้การคำนวณแบบลดผลกระทบ
-            const baseFactor = dispersionValue / 180;
-            correction = baseFactor * heightDiff * 0.6; // ลดค่าชดเชย 40%
-        } else if (absHeightDiff <= 165) {
-            // ความสูงต่างกันมาก - ปรับสูตรตามผลการทดสอบ
-            // สำหรับ +165m, dispersion 17m ต้องได้ -38 mils
-            // สูตร: -38/165 = -0.23 mils ต่อเมตร สำหรับ dispersion 17m
-            const correctionRate = -0.23 * (dispersionValue / 17); // ปรับตาม dispersion
-            correction = correctionRate * heightDiff;
-        } else {
-            // ความสูงต่างกันมากมาย (>165m) - ปรับปรุงสูตรให้แม่นยำขึ้น
-            // ใช้การลดทอนแบบ logarithmic เพื่อลดผลกระทบของความสูงที่มากเกินไป
-            const baseRate = -0.23 * (dispersionValue / 17);
-            
-            if (absHeightDiff <= 250) {
-                // 165-250m: ลดประสิทธิภาพการชดเชยลง 15%
-                const reductionFactor = 0.85;
-                correction = baseRate * heightDiff * reductionFactor;
-            } else if (absHeightDiff <= 350) {
-                // 250-350m: ลดประสิทธิภาพการชดเชยลง 30%
-                const reductionFactor = 0.70;
-                correction = baseRate * heightDiff * reductionFactor;
-            } else {
-                // >350m: ลดประสิทธิภาพการชดเชยลง 50% + logarithmic decay
-                const reductionFactor = 0.50;
-                const logDecay = Math.log10(350 / absHeightDiff + 1); // ลดลงตาม log
-                correction = baseRate * heightDiff * reductionFactor * logDecay;
-            }
-        }
-        
-        // จำกัดค่าชดเชยตามความสูงและความสมจริง
-        let maxAbsCorrection;
-        if (absHeightDiff <= 165) {
-            maxAbsCorrection = Math.min(200, absHeightDiff * 0.5);
-        } else if (absHeightDiff <= 250) {
-            maxAbsCorrection = Math.min(150, absHeightDiff * 0.4);
-        } else if (absHeightDiff <= 350) {
-            maxAbsCorrection = Math.min(120, absHeightDiff * 0.35);
-        } else {
-            maxAbsCorrection = Math.min(100, absHeightDiff * 0.25); // จำกัดสูงสุดสำหรับความสูงมาก
-        }
-        correction = Math.max(-maxAbsCorrection, Math.min(maxAbsCorrection, correction));
+        // สูตรการคำนวณ: (dispersion ÷ 100) × ความต่างระดับความสูง
+        // ค่าที่ได้จะเป็น mils สำหรับการปรับมุมยกปืน
+        const correction = (dispersionValue / 100) * heightDiff;
         
         return Math.round(correction);
     }
@@ -1279,61 +1172,6 @@ class MortarCalculator {
         return points;
     }
 
-    // หาการชดเชยจากระยะทางอื่นเมื่อมุมยิงเกินขอบเขตที่ปืนยิงได้ - ปรับปรุงแล้ว
-    findCompensationSolution(originalDistance, heightDiff, originalElevation) {
-        const MIN_ELEVATION = 801;
-        const MAX_ELEVATION = 1516;
-        const OPTIMAL_ELEVATION = 1150; // มุมยิงที่เหมาะสมที่สุด
-        const data = this.getCurrentBallisticData();
-        
-        if (!data || data.length === 0) return null;
-
-        // กรองข้อมูลที่ใช้ได้ (ไม่มี dispersion = "0m")
-        const validData = data.filter(item => item.dispersion !== "0m");
-        
-        // หาระยะทางที่ให้มุมยิงอยู่ในช่วงที่เหมาะสม
-        let bestSolution = null;
-        let bestScore = Infinity;
-        let foundValidSolutions = [];
-
-        for (let item of validData) {
-            const testElevationCorrection = this.calculateElevationCorrection(heightDiff, item, item.range);
-            const testFinalElevation = item.elevation + testElevationCorrection;
-            
-            // ตรวจสอบว่าอยู่ในช่วงมุมยิงที่เหมาะสม
-            if (testFinalElevation >= MIN_ELEVATION && testFinalElevation <= MAX_ELEVATION) {
-                foundValidSolutions.push({
-                    originalDistance: originalDistance,
-                    compensationDistance: item.range,
-                    elevation: testFinalElevation,
-                    elevationCorrection: testElevationCorrection,
-                    ballisticData: item,
-                    distanceDifference: item.range - originalDistance
-                });
-            }
-        }
-
-        // หาค่าที่ดีที่สุดจากตัวเลือกที่มี
-        if (foundValidSolutions.length > 0) {
-            // เรียงลำดับตามความใกล้เคียงกับระยะทางเดิมและมุมยิงที่เหมาะสม
-            foundValidSolutions.sort((a, b) => {
-                const aDistanceScore = Math.abs(a.compensationDistance - originalDistance);
-                const aElevationScore = Math.abs(a.elevation - OPTIMAL_ELEVATION) * 0.5;
-                const aScore = aDistanceScore + aElevationScore;
-                
-                const bDistanceScore = Math.abs(b.compensationDistance - originalDistance);
-                const bElevationScore = Math.abs(b.elevation - OPTIMAL_ELEVATION) * 0.5;
-                const bScore = bDistanceScore + bElevationScore;
-                
-                return aScore - bScore;
-            });
-            
-            bestSolution = foundValidSolutions[0];
-        }
-
-        return bestSolution;
-    }
-
     // Enhanced ballistic data finder with physics integration
     findEnhancedBallisticData(distance, heightDiff) {
         const tableData = this.findBallisticData(distance);
@@ -1397,15 +1235,9 @@ class MortarCalculator {
         
         // เลือกประจุที่เหมาะสมที่สุดตามระยะทาง
         const optimalCharge = this.selectOptimalCharge(distance);
-        let chargeSelectionReason = "";
-        
         if (optimalCharge !== this.currentCharge) {
-            const oldCharge = this.currentCharge;
             this.currentCharge = optimalCharge;
             this.updateChargeTabsDisplay();
-            chargeSelectionReason = `เปลี่ยนจาก Charge ${oldCharge} เป็น Charge ${optimalCharge} (เหมาะสมกับระยะ ${distance}m)`;
-        } else {
-            chargeSelectionReason = `ใช้ Charge ${this.currentCharge} (เหมาะสมกับระยะ ${distance}m)`;
         }
         
         // ค้นหาข้อมูลการยิงจากตาราง BALLISTIC_DATA (เหมือน arma-mortar.com)
@@ -1416,42 +1248,28 @@ class MortarCalculator {
         }
 
         // คำนวณค่าชดเชยมุมยกปืนจากความแตกต่างของระดับความสูง
-        // ใช้สูตรปรับปรุงที่รองรับความสูงต่างกันมาก
-        const elevationCorrection = this.calculateElevationCorrection(heightDiff, ballisticData, distance);
+        // ใช้สูตร: (dispersion ÷ 100) × ความต่างระดับความสูง
+        const elevationCorrection = this.calculateElevationCorrection(heightDiff, ballisticData);
         
-        // ใช้ข้อมูลจากตารางโดยตรงโดยไม่ปรับค่า
-        const adjustedBaseElevation = ballisticData.elevation; 
-        let finalElevation = adjustedBaseElevation + elevationCorrection;
-        
-        // ตรวจสอบขอบเขตมุมยิงของปืน (801-1516 mils)
-        const MIN_ELEVATION = 801;
-        const MAX_ELEVATION = 1516;
-        let compensationSolution = null;
-        
-        if (finalElevation < MIN_ELEVATION || finalElevation > MAX_ELEVATION) {
-            // หาระยะทางที่ให้มุมยิงที่เหมาะสม
-            compensationSolution = this.findCompensationSolution(distance, heightDiff, finalElevation);
-            if (compensationSolution) {
-                finalElevation = compensationSolution.elevation;
-                ballisticData = compensationSolution.ballisticData;
-            }
-        }
+        // ใช้ข้อมูลจากตารางโดยตรงโดยไม่ปรับค่า (วิธีมาตรฐานของเครื่องคำนวณมอร์ต้าร์)
+        // ข้อมูลในตารางถูกปรับเทียบสำหรับ ARMA แล้ว
+        const adjustedBaseElevation = Math.round(ballisticData.elevation * 1.00); 
+        const finalElevation = adjustedBaseElevation + elevationCorrection;
 
-        // Display results with compensation information
+        // Display results (simplified like arma-mortar.com)
         this.displayResults({
             distance: Math.round(distance),
             azimuthDegrees: azimuthDegrees.toFixed(1),
             azimuthMils: Math.round(azimuthMils),
             elevation: finalElevation,
-            originalElevation: adjustedBaseElevation,
+            originalElevation: ballisticData.elevation,
             elevationCorrection: elevationCorrection,
             charge: this.currentCharge,
             timeOfFlight: ballisticData.timeOfFlight,
             heightDiff: heightDiff,
             dispersion: ballisticData.dispersion,
             muzzleVelocity: ballisticData.muzzleVelocity || 150,
-            trajectory: ballisticData.trajectory || [],
-            compensationSolution: compensationSolution
+            trajectory: ballisticData.trajectory || []
         });
 
         // Highlight table row
@@ -1469,102 +1287,24 @@ class MortarCalculator {
         // Add additional info
         this.updateAdditionalInfo(results);
 
-        // Show/hide height warning
-        this.updateHeightWarning(results.heightDiff);
-
         this.resultsSection.classList.add('show');
     }
 
     updateAdditionalInfo(results) {
         const additionalInfo = document.getElementById('additional-info');
+        // คำนวณค่า dispersion ที่ใช้ในการคำนวณ elevation correction
         const dispersionValue = parseFloat(results.dispersion.replace('m', ''));
-        const absHeightDiff = Math.abs(results.heightDiff);
+        const correctionFormula = `(${dispersionValue} ÷ 100) × ${results.heightDiff} = ${results.elevationCorrection}`;
         
-        // คำนวณสูตรการชดเชยแบบปรับปรุงให้ตรงกับอัลกอริทึมใหม่
-        let correctionFormula;
-        let correctionLevel;
-        
-        if (absHeightDiff <= 25) {
-            correctionLevel = "น้อยมาก";
-            correctionFormula = `(${dispersionValue} ÷ 250) × ${results.heightDiff} = ${results.elevationCorrection}`;
-        } else if (absHeightDiff <= 50) {
-            correctionLevel = "น้อย";
-            correctionFormula = `(${dispersionValue} ÷ 200) × ${results.heightDiff} = ${results.elevationCorrection}`;
-        } else if (absHeightDiff <= 100) {
-            correctionLevel = "ปานกลาง";
-            correctionFormula = `(${dispersionValue} ÷ 180) × ${results.heightDiff} × 0.6 = ${results.elevationCorrection}`;
-        } else if (absHeightDiff <= 165) {
-            correctionLevel = "มาก";
-            const correctionRate = (-0.23 * (dispersionValue / 17)).toFixed(3);
-            correctionFormula = `แก้ไขแล้ว: ${correctionRate} × ${results.heightDiff} = ${results.elevationCorrection}`;
-        } else {
-            const baseRate = (-0.23 * (dispersionValue / 17)).toFixed(3);
-            if (absHeightDiff <= 250) {
-                correctionLevel = "มากมาย (165-250m)";
-                correctionFormula = `ลดประสิทธิภาพ 15%: ${baseRate} × ${results.heightDiff} × 0.85 = ${results.elevationCorrection}`;
-            } else if (absHeightDiff <= 350) {
-                correctionLevel = "สูงมาก (250-350m)";
-                correctionFormula = `ลดประสิทธิภาพ 30%: ${baseRate} × ${results.heightDiff} × 0.70 = ${results.elevationCorrection}`;
-            } else {
-                correctionLevel = "สูงเกินไป (>350m)";
-                const logDecay = Math.log10(350 / absHeightDiff + 1).toFixed(2);
-                correctionFormula = `ลดประสิทธิภาพ 50% + Log(${logDecay}): ${results.elevationCorrection} mils`;
-            }
-        }
-
-        let infoHTML = `
+        additionalInfo.innerHTML = `
             <div class="info-item">
                 <strong>กระสุน:</strong> ${this.currentShell}
             </div>
             <div class="info-item">
                 <strong>ประเภทมอร์ต้าร์:</strong> ${this.currentMortarType === 'mod' ? 'MOD Adult Mortars' : 'Original Game'}
             </div>
-        `;
-
-        // ข้อมูลการทดสอบ - เปรียบเทียบกับผลยิงจริง
-        infoHTML += `
             <div class="info-item physics-info">
-                <strong>📊 ผลการวิเคราะห์การทดสอบ:</strong>
-            </div>
-            <div class="info-item">
-                <strong>เป้าหมาย:</strong> Grid 030 019 (X: 03068, Y: 01956)
-            </div>
-            <div class="info-item">
-                <strong>ผลยิงจริง:</strong> X: 02966, Y: 02298, Z: 41m
-            </div>
-            <div class="info-item">
-                <strong>ความเบี่ยงเบน:</strong> X +102m, Y -342m (รวม 357m)
-            </div>
-        `;
-
-        // เพิ่มข้อมูลการชดเชยหากมี
-        if (results.compensationSolution) {
-            const comp = results.compensationSolution;
-            infoHTML += `
-                <div class="info-item warning-info">
-                    <strong>⚠️ มุมยิงเกินขอบเขต (801-1516 mils)</strong>
-                </div>
-                <div class="info-item compensation-info">
-                    <strong>🔄 การชดเชยด้วยระยะทางอื่น:</strong>
-                </div>
-                <div class="info-item">
-                    <strong>ระยะเป้าหมายเดิม:</strong> ${comp.originalDistance} m
-                </div>
-                <div class="info-item">
-                    <strong>ระยะสำหรับการยิง:</strong> ${comp.compensationDistance} m
-                </div>
-                <div class="info-item">
-                    <strong>ผลต่าง:</strong> ${comp.distanceDifference > 0 ? '+' : ''}${comp.distanceDifference} m
-                </div>
-                <div class="trajectory-hint compensation">
-                    💡 ใช้ระยะ ${comp.compensationDistance}m แทนเพื่อให้มุมยิงอยู่ในขอบเขตที่ปืนยิงได้
-                </div>
-            `;
-        }
-
-        infoHTML += `
-            <div class="info-item physics-info">
-                <strong>📊 ข้อมูลการคำนวณปรับปรุง:</strong>
+                <strong>📊 ข้อมูลการคำนวณจาก BALLISTIC_DATA:</strong>
             </div>
             <div class="info-item">
                 <strong>มุมยกปืนจากตาราง:</strong> ${results.originalElevation} mils
@@ -1573,10 +1313,7 @@ class MortarCalculator {
                 <strong>ค่า Dispersion:</strong> ${results.dispersion}
             </div>
             <div class="info-item">
-                <strong>ระดับความสูงต่าง:</strong> ${correctionLevel} (${absHeightDiff}m)
-            </div>
-            <div class="info-item">
-                <strong>สูตรชดเชยปรับปรุง:</strong> ${correctionFormula}
+                <strong>สูตรการชดเชยมุมยก:</strong> ${correctionFormula} mils
             </div>
             <div class="info-item">
                 <strong>ค่าชดเชยมุมยก:</strong> ${results.elevationCorrection > 0 ? '+' : ''}${results.elevationCorrection} mils
@@ -1584,49 +1321,10 @@ class MortarCalculator {
             <div class="info-item">
                 <strong>มุมยกปืนสุดท้าย:</strong> ${results.elevation} mils
             </div>
-            <div class="info-item recommendation">
-                <strong>💡 การปรับปรุงสูตร:</strong> แก้ไขปัญหาการชดเชยมากเกินไปเมื่อความสูงต่างกัน >100m
+            <div class="trajectory-hint">
+                🎯 ใช้ข้อมูลจาก BALLISTIC_DATA เป็นหลัก พร้อมค่าชดเชยจากความสูง
             </div>
-            <div class="info-item">
-                <strong>🔧 การแก้ไข:</strong> ลดอัตราการชดเชยจาก ~61 mils เป็น ~${Math.abs(results.elevationCorrection)} mils สำหรับ ${absHeightDiff}m
-            </div>
-            <div class="info-item">
-                <strong>📊 ผลลัพธ์:</strong> มุมยิง ${results.elevation} mils แทน ${results.originalElevation + Math.round((dispersionValue/100) * results.heightDiff)} mils (เดิม)
-            </div>`;
-
-        // เพิ่มคำแนะนำสำหรับความสูงที่มากขึ้น
-        if (absHeightDiff > 165) {
-            infoHTML += `
-                <div class="info-item warning-info">
-                    <strong>⚠️ คำเตือนความสูงมาก (>${absHeightDiff > 350 ? '350' : '165'}m):</strong>
-                </div>
-                <div class="info-item">
-                    <strong>🎯 ความแม่นยำ:</strong> ลดลง ${absHeightDiff <= 250 ? '15%' : absHeightDiff <= 350 ? '30%' : '50%+'} เนื่องจากผลกระทบของอากาศพลศาสตร์
-                </div>
-                <div class="info-item">
-                    <strong>🔬 แนะนำ:</strong> ทดสอบยิงก่อนเพื่อปรับค่าชดเชย หรือเปลี่ยนตำแหน่งยิงให้ความสูงต่างกันน้อยลง
-                </div>`;
-                
-            if (absHeightDiff > 350) {
-                infoHTML += `
-                    <div class="info-item critical-warning">
-                        <strong>🚨 ความสูงเกินขีดจำกัด (>350m):</strong> ความแม่นยำต่ำมาก แนะนำให้เปลี่ยนตำแหน่ง
-                    </div>`;
-            }
-        }
-
-        infoHTML += `
         `;
-
-        if (!results.compensationSolution) {
-            infoHTML += `
-                <div class="trajectory-hint">
-                    🎯 มุมยิงอยู่ในขอบเขตปกติ (${results.elevation} mils)
-                </div>
-            `;
-        }
-
-        additionalInfo.innerHTML = infoHTML;
     }
 
     highlightTableRow(range) {
@@ -1640,62 +1338,6 @@ class MortarCalculator {
         if (targetRow) {
             targetRow.classList.add('highlighted');
             targetRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    }
-
-    updateHeightWarning(heightDiff) {
-        const heightWarning = document.getElementById('height-warning');
-        const absHeightDiff = Math.abs(heightDiff);
-        
-        if (absHeightDiff > 100) {
-            // แสดงคำเตือนเมื่อความสูงต่างกันมากกว่า 100m
-            heightWarning.style.display = 'block';
-            
-            // อัพเดทข้อความตามระดับความสูงและภาษา
-            const warningContent = heightWarning.querySelector('.warning-content');
-            const texts = LANGUAGE_DATA[currentLanguage];
-            let deviationRange = '';
-            let recommendation = '';
-            
-            if (currentLanguage === 'th') {
-                if (absHeightDiff <= 165) {
-                    deviationRange = '±50-100 เมตร';
-                    recommendation = 'ทดสอบยิง 1-2 นัดเพื่อปรับค่าชดเชย';
-                } else if (absHeightDiff <= 250) {
-                    deviationRange = '±75-150 เมตร';
-                    recommendation = 'แนะนำให้ทดสอบยิงก่อน หรือเปลี่ยนตำแหน่งให้ใกล้กัน';
-                } else if (absHeightDiff <= 350) {
-                    deviationRange = '±100-200 เมตร';
-                    recommendation = 'ความแม่นยำต่ำ แนะนำให้เปลี่ยนตำแหน่งยิง';
-                } else {
-                    deviationRange = '±150-300 เมตร';
-                    recommendation = 'ความแม่นยำต่ำมาก ควรเปลี่ยนตำแหน่งยิงหรือใช้วิธีอื่น';
-                }
-            } else {
-                if (absHeightDiff <= 165) {
-                    deviationRange = '±50-100 meters';
-                    recommendation = 'Test fire 1-2 rounds to adjust compensation';
-                } else if (absHeightDiff <= 250) {
-                    deviationRange = '±75-150 meters';
-                    recommendation = 'Recommended to test fire first or change position';
-                } else if (absHeightDiff <= 350) {
-                    deviationRange = '±100-200 meters';
-                    recommendation = 'Low accuracy, recommend changing firing position';
-                } else {
-                    deviationRange = '±150-300 meters';
-                    recommendation = 'Very low accuracy, should change position or use other methods';
-                }
-            }
-            
-            warningContent.innerHTML = `
-                <h4>${texts.heightWarningTitle} ${absHeightDiff}m</h4>
-                <p>🎯 <strong>${texts.heightWarningDeviation}</strong> ${deviationRange} ${currentLanguage === 'th' ? 'จากจุดเป้าหมาย' : 'from target point'}</p>
-                <p>📊 <strong>${currentLanguage === 'th' ? 'สาเหตุ:' : 'Cause:'}</strong> ${texts.heightWarningCause}</p>
-                <p>💡 <strong>${texts.heightWarningRecommendation}</strong> ${recommendation}</p>
-            `;
-        } else {
-            // ซ่อนคำเตือนเมื่อความสูงต่างกันน้อยกว่า 100m
-            heightWarning.style.display = 'none';
         }
     }
 
