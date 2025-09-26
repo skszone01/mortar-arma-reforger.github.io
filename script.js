@@ -26,6 +26,8 @@ const LANGUAGE_DATA = {
         charge: "ประจุ:",
         timeOfFlight: "เวลาบิน:",
         heightDifference: "ความต่างความสูง:",
+        accuracyWarning: "⚠️ คำเตือนความแม่นยำ",
+        accuracyWarningText: "หากระยะชดเชยความสูงมากกว่า 100 เมตร จะมีความคลาดเคลื่อนของระยะกระสุนตก 50-200 เมตร",
         ballisticData: "📋 ข้อมูลลิสติก",
         range: "ระยะ (m)",
         elevationMil: "มุมยกปืน (mil)",
@@ -60,6 +62,8 @@ const LANGUAGE_DATA = {
         charge: "Charge:",
         timeOfFlight: "Time of Flight:",
         heightDifference: "Height Difference:",
+        accuracyWarning: "⚠️ Accuracy Warning",
+        accuracyWarningText: "If height compensation distance is greater than 100 meters, there will be impact deviation of 50-200 meters",
         ballisticData: "📋 Ballistic Data",
         range: "Range (m)",
         elevationMil: "Elevation (mil)",
@@ -1296,33 +1300,51 @@ class MortarCalculator {
         const dispersionValue = parseFloat(results.dispersion.replace('m', ''));
         const correctionFormula = `(${dispersionValue} ÷ 100) × ${results.heightDiff} = ${results.elevationCorrection}`;
         
+        // Check if height difference is greater than 100m for accuracy warning
+        const heightCompensationDistance = Math.abs(results.heightDiff);
+        const showWarning = heightCompensationDistance > 100;
+        
+        // Get text from current language
+        const texts = LANGUAGE_DATA[currentLanguage];
+        
         additionalInfo.innerHTML = `
             <div class="info-item">
-                <strong>กระสุน:</strong> ${this.currentShell}
+                <strong>${currentLanguage === 'th' ? 'กระสุน:' : 'Shell:'}</strong> ${this.currentShell}
             </div>
             <div class="info-item">
-                <strong>ประเภทมอร์ต้าร์:</strong> ${this.currentMortarType === 'mod' ? 'MOD Adult Mortars' : 'Original Game'}
+                <strong>${currentLanguage === 'th' ? 'ประเภทมอร์ต้าร์:' : 'Mortar Type:'}</strong> ${this.currentMortarType === 'mod' ? 'MOD Adult Mortars' : 'Original Game'}
             </div>
             <div class="info-item physics-info">
-                <strong>📊 ข้อมูลการคำนวณจาก BALLISTIC_DATA:</strong>
+                <strong>📊 ${currentLanguage === 'th' ? 'ข้อมูลการคำนวณจาก BALLISTIC_DATA:' : 'Calculation Data from BALLISTIC_DATA:'}</strong>
             </div>
             <div class="info-item">
-                <strong>มุมยกปืนจากตาราง:</strong> ${results.originalElevation} mils
+                <strong>${currentLanguage === 'th' ? 'มุมยกปืนจากตาราง:' : 'Table Elevation:'}</strong> ${results.originalElevation} mils
             </div>
             <div class="info-item">
-                <strong>ค่า Dispersion:</strong> ${results.dispersion}
+                <strong>${currentLanguage === 'th' ? 'ค่า Dispersion:' : 'Dispersion:'}</strong> ${results.dispersion}
             </div>
             <div class="info-item">
-                <strong>สูตรการชดเชยมุมยก:</strong> ${correctionFormula} mils
+                <strong>${currentLanguage === 'th' ? 'สูตรการชดเชยมุมยก:' : 'Elevation Correction Formula:'}</strong> ${correctionFormula} mils
             </div>
             <div class="info-item">
-                <strong>ค่าชดเชยมุมยก:</strong> ${results.elevationCorrection > 0 ? '+' : ''}${results.elevationCorrection} mils
+                <strong>${currentLanguage === 'th' ? 'ค่าชดเชยมุมยก:' : 'Elevation Correction:'}</strong> ${results.elevationCorrection > 0 ? '+' : ''}${results.elevationCorrection} mils
             </div>
             <div class="info-item">
-                <strong>มุมยกปืนสุดท้าย:</strong> ${results.elevation} mils
+                <strong>${currentLanguage === 'th' ? 'มุมยกปืนสุดท้าย:' : 'Final Elevation:'}</strong> ${results.elevation} mils
             </div>
+            ${showWarning ? `
+            <div class="accuracy-warning">
+                <div class="warning-header">
+                    <span class="warning-icon">⚠️</span>
+                    <strong>${texts.accuracyWarning}</strong>
+                </div>
+                <div class="warning-text">
+                    ${texts.accuracyWarningText}
+                </div>
+            </div>
+            ` : ''}
             <div class="trajectory-hint">
-                🎯 ใช้ข้อมูลจาก BALLISTIC_DATA เป็นหลัก พร้อมค่าชดเชยจากความสูง
+                🎯 ${currentLanguage === 'th' ? 'ใช้ข้อมูลจาก BALLISTIC_DATA เป็นหลัก พร้อมค่าชดเชยจากความสูง' : 'Using BALLISTIC_DATA with height compensation'}
             </div>
         `;
     }
