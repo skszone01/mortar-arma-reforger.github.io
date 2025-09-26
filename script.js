@@ -1237,23 +1237,40 @@ class MortarCalculator {
         // คำนวณความแตกต่างของระดับความสูงระหว่างปืนกับเป้าหมาย
         const heightDiff = target.alt - weapon.alt;
         
-        // เลือกประจุที่เหมาะสมที่สุดตามระยะทาง
-        const optimalCharge = this.selectOptimalCharge(distance);
+        // สูตรการปรับปรุงระยะทางและความสูงเมื่อความต่างความสูงเกิน 100 เมตร
+        let adjustedDistance = distance;
+        let adjustedHeightDiff = heightDiff;
+        let calculationNote = '';
+
+        const absoluteHeightDiff = Math.abs(heightDiff);
+        if (absoluteHeightDiff > 100) {
+            // ส่วนที่เกิน 100 เมตร
+            const excessHeight = absoluteHeightDiff - 100;
+            // นำส่วนเกินไปบวกกับระยะทาง (ไม่ปัด)
+            const rangeAdjustment = excessHeight;
+            adjustedDistance = distance + rangeAdjustment;
+            // ความต่างความสูงที่ใช้คำนวณ = 100 หรือ -100 เท่านั้น
+            adjustedHeightDiff = heightDiff > 0 ? 100 : -100;
+            calculationNote = `สูตรปรับแล้ว: ระยะทาง ${distance}m + ${rangeAdjustment}m = ${adjustedDistance}m, ความสูง ${adjustedHeightDiff}m (ตัดไว้ 100m)`;
+        }
+        
+        // เลือกประจุที่เหมาะสมตามระยะทางที่ปรับแล้ว
+        const optimalCharge = this.selectOptimalCharge(adjustedDistance);
         if (optimalCharge !== this.currentCharge) {
             this.currentCharge = optimalCharge;
             this.updateChargeTabsDisplay();
         }
         
-        // ค้นหาข้อมูลการยิงจากตาราง BALLISTIC_DATA (เหมือน arma-mortar.com)
-        const ballisticData = this.findBallisticData(distance);
+        // ค้นหาข้อมูลการยิงจากตาราง BALLISTIC_DATA ใช้ระยะทางที่ปรับแล้ว
+        const ballisticData = this.findBallisticData(adjustedDistance);
         if (!ballisticData) {
             this.showError('ไม่มีข้อมูลการยิงสำหรับการตั้งค่านี้');
             return;
         }
 
-        // คำนวณค่าชดเชยมุมยกปืนจากความแตกต่างของระดับความสูง
-        // ใช้สูตร: (dispersion ÷ 100) × ความต่างระดับความสูง
-        const elevationCorrection = this.calculateElevationCorrection(heightDiff, ballisticData);
+        // คำนวณค่าชดเชยมุมยกปืนจากความต่างระดับความสูงที่ปรับแล้ว
+        // ใช้สูตร: (dispersion ÷ 100) × ความต่างระดับความสูงที่ปรับแล้ว
+        const elevationCorrection = this.calculateElevationCorrection(adjustedHeightDiff, ballisticData);
         
         // ใช้ข้อมูลจากตารางโดยตรงโดยไม่ปรับค่า (วิธีมาตรฐานของเครื่องคำนวณมอร์ต้าร์)
         // ข้อมูลในตารางถูกปรับเทียบสำหรับ ARMA แล้ว
@@ -1263,6 +1280,7 @@ class MortarCalculator {
         // Display results (simplified like arma-mortar.com)
         this.displayResults({
             distance: Math.round(distance),
+            adjustedDistance: Math.round(adjustedDistance),
             azimuthDegrees: azimuthDegrees.toFixed(1),
             azimuthMils: Math.round(azimuthMils),
             elevation: finalElevation,
@@ -1271,9 +1289,12 @@ class MortarCalculator {
             charge: this.currentCharge,
             timeOfFlight: ballisticData.timeOfFlight,
             heightDiff: heightDiff,
+            adjustedHeightDiff: adjustedHeightDiff,
             dispersion: ballisticData.dispersion,
             muzzleVelocity: ballisticData.muzzleVelocity || 150,
-            trajectory: ballisticData.trajectory || []
+            trajectory: ballisticData.trajectory || [],
+            calculationNote: calculationNote,
+            isAdjusted: adjustedDistance !== distance || adjustedHeightDiff !== heightDiff
         });
 
         // Highlight table row
@@ -1298,11 +1319,12 @@ class MortarCalculator {
         const additionalInfo = document.getElementById('additional-info');
         // คำนวณค่า dispersion ที่ใช้ในการคำนวณ elevation correction
         const dispersionValue = parseFloat(results.dispersion.replace('m', ''));
-        const correctionFormula = `(${dispersionValue} ÷ 100) × ${results.heightDiff} = ${results.elevationCorrection}`;
+        const correctionFormula = `(${dispersionValue} ÷ 100) × ${results.adjustedHeightDiff || results.heightDiff} = ${results.elevationCorrection}`;
         
-        // Check if height difference is greater than 100m for accuracy warning
-        const heightCompensationDistance = Math.abs(results.heightDiff);
-        const showWarning = heightCompensationDistance > 100;
+        // Check if calculation was adjusted
+        const originalHeightCompensation = Math.abs(results.heightDiff);
+        const showWarning = originalHeightCompensation > 100;
+        const wasAdjusted = results.isAdjusted;
         
         // Get text from current language
         const texts = LANGUAGE_DATA[currentLanguage];
@@ -1314,6 +1336,26 @@ class MortarCalculator {
             <div class="info-item">
                 <strong>${currentLanguage === 'th' ? 'ประเภทมอร์ต้าร์:' : 'Mortar Type:'}</strong> ${this.currentMortarType === 'mod' ? 'MOD Adult Mortars' : 'Original Game'}
             </div>
+            ${wasAdjusted ? `
+            <div class="info-item calculation-adjustment">
+                <strong>🔧 ${currentLanguage === 'th' ? 'การปรับปรุงการคำนวณ:' : 'Calculation Adjustment:'}</strong>
+            </div>
+            <div class="info-item">
+                <strong>${currentLanguage === 'th' ? 'ระยะทางเดิม:' : 'Original Distance:'}</strong> ${results.distance} m
+            </div>
+            <div class="info-item">
+                <strong>${currentLanguage === 'th' ? 'ระยะทางที่ใช้คำนวณ:' : 'Calculation Distance:'}</strong> ${results.adjustedDistance} m
+            </div>
+            <div class="info-item">
+                <strong>${currentLanguage === 'th' ? 'ความสูงเดิม:' : 'Original Height Diff:'}</strong> ${results.heightDiff > 0 ? '+' : ''}${results.heightDiff} m
+            </div>
+            <div class="info-item">
+                <strong>${currentLanguage === 'th' ? 'ความสูงที่ใช้คำนวณ:' : 'Calculation Height Diff:'}</strong> ${results.adjustedHeightDiff > 0 ? '+' : ''}${results.adjustedHeightDiff} m
+            </div>
+            <div class="info-item calculation-note">
+                <em>${results.calculationNote}</em>
+            </div>
+            ` : ''}
             <div class="info-item physics-info">
                 <strong>📊 ${currentLanguage === 'th' ? 'ข้อมูลการคำนวณจาก BALLISTIC_DATA:' : 'Calculation Data from BALLISTIC_DATA:'}</strong>
             </div>
@@ -1336,15 +1378,21 @@ class MortarCalculator {
             <div class="accuracy-warning">
                 <div class="warning-header">
                     <span class="warning-icon">⚠️</span>
-                    <strong>${texts.accuracyWarning}</strong>
+                    <strong>${currentLanguage === 'th' ? 'การปรับปรุงความแม่นยำ' : 'Accuracy Improvement'}</strong>
                 </div>
                 <div class="warning-text">
-                    ${texts.accuracyWarningText}
+                    ${currentLanguage === 'th' ? 
+                        'ใช้สูตรพิเศษเมื่อความต่างความสูง > 100m เพื่อลดความคลาดเคลื่อน' : 
+                        'Using special formula when height difference > 100m to reduce deviation'
+                    }
                 </div>
             </div>
             ` : ''}
             <div class="trajectory-hint">
-                🎯 ${currentLanguage === 'th' ? 'ใช้ข้อมูลจาก BALLISTIC_DATA เป็นหลัก พร้อมค่าชดเชยจากความสูง' : 'Using BALLISTIC_DATA with height compensation'}
+                🎯 ${currentLanguage === 'th' ? 
+                    (wasAdjusted ? 'ใช้สูตรปรับปรุงสำหรับความแม่นยำสูง' : 'ใช้ข้อมูลจาก BALLISTIC_DATA เป็นหลัก พร้อมค่าชดเชยจากความสูง') : 
+                    (wasAdjusted ? 'Using improved formula for high accuracy' : 'Using BALLISTIC_DATA with height compensation')
+                }
             </div>
         `;
     }
