@@ -20,6 +20,19 @@ body {
     padding: 10px;
 }
 
+/* Numpad Info Box */
+.numpad-info-box {
+    background: #232323;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin: 10px 0;
+    font-size: 0.85em;
+    line-height: 1.4;
+    color: #c9d1d9;
+    border: 1px solid #30363d;
+    max-width: 300px;
+}
+
 /* Header */
 header {
     text-align: center;
