@@ -37,7 +37,7 @@ const LANGUAGE_DATA = {
         footer: "เครื่องคำนวณมอร์ต้าร์ ARMA REFORGER v1.0 | อิงจากข้อมูลลิสติกในเกม",
         createdBy: "สร้างโดย:",
         targetPresets: "🎯 เป้าหมายที่บันทึกไว้",
-        presetInstructions: "คลิกซ้าย: โหลด • คลิกขวา: บันทึก • ✗: เคลียทั้งหมด",
+        presetInstructions: "PC: คลิกซ้าย(โหลด) • คลิกขวา(บันทึก) | มือถือ: แตะ(โหลด) • แตะค้าง(บันทึก) | ✗: เคลีย",
         presetSaved: "บันทึกเป้าหมาย",
         presetLoaded: "โหลดเป้าหมาย",
         presetEmpty: "ว่าง",
@@ -83,7 +83,7 @@ const LANGUAGE_DATA = {
         footer: "ARMA REFORGER Mortar Calculator v1.0 | Based on in-game ballistic data",
         createdBy: "Created by:",
         targetPresets: "🎯 Target Presets",
-        presetInstructions: "Left-click: Load • Right-click: Save • ✗: Clear All",
+        presetInstructions: "PC: Left-click(Load) • Right-click(Save) | Mobile: Tap(Load) • Long-press(Save) | ✗: Clear All",
         presetSaved: "Saved",
         presetLoaded: "Loaded",
         presetEmpty: "Empty",
@@ -992,6 +992,10 @@ class MortarCalculator {
          this.targetX, this.targetY, this.targetAlt].forEach(input => {
             input.addEventListener('input', () => {
                 this.updateGridReferences();
+                // Check and update active preset status for target inputs only
+                if (input === this.targetX || input === this.targetY || input === this.targetAlt) {
+                    this.updateActivePresetStatus();
+                }
                 if (this.validateInputs()) {
                     this.calculate();
                 }
@@ -1035,18 +1039,85 @@ class MortarCalculator {
                 });
             } else {
                 // Regular preset buttons
+                const presetNumber = parseInt(btn.dataset.preset);
+                
+                // Touch/Mobile support variables
+                let touchStartTime = 0;
+                let touchTimer = null;
+                let isLongPress = false;
+                
+                // Touch start (mobile)
+                btn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    touchStartTime = Date.now();
+                    isLongPress = false;
+                    
+                    // Add visual feedback for touch
+                    btn.style.transform = 'scale(0.95)';
+                    
+                    // Set timer for long press (500ms)
+                    touchTimer = setTimeout(() => {
+                        isLongPress = true;
+                        // Vibrate if supported (mobile feedback)
+                        if (navigator.vibrate) {
+                            navigator.vibrate(50);
+                        }
+                        // Visual feedback for long press
+                        btn.style.background = 'rgba(34, 197, 94, 0.4)';
+                        btn.style.borderColor = '#22c55e';
+                        
+                        // Save preset
+                        this.saveTargetPreset(presetNumber);
+                    }, 500);
+                });
+                
+                // Touch end (mobile)
+                btn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    
+                    // Reset visual feedback
+                    btn.style.transform = '';
+                    btn.style.background = '';
+                    btn.style.borderColor = '';
+                    
+                    // Clear timer
+                    if (touchTimer) {
+                        clearTimeout(touchTimer);
+                    }
+                    
+                    // If it was a short tap (not long press), load preset
+                    if (!isLongPress && (Date.now() - touchStartTime < 500)) {
+                        this.loadTargetPreset(presetNumber);
+                    }
+                });
+                
+                // Touch cancel (mobile)
+                btn.addEventListener('touchcancel', (e) => {
+                    // Reset everything if touch is cancelled
+                    btn.style.transform = '';
+                    btn.style.background = '';
+                    btn.style.borderColor = '';
+                    if (touchTimer) {
+                        clearTimeout(touchTimer);
+                    }
+                });
+                
+                // Desktop support (existing functionality)
                 // Left click: Load preset
                 btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const presetNumber = parseInt(btn.dataset.preset);
-                    this.loadTargetPreset(presetNumber);
+                    // Only handle if not on touch device or if touch events didn't handle it
+                    if (!('ontouchstart' in window)) {
+                        e.preventDefault();
+                        this.loadTargetPreset(presetNumber);
+                    }
                 });
 
-                // Right click: Save preset
+                // Right click: Save preset (desktop only)
                 btn.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-                    const presetNumber = parseInt(btn.dataset.preset);
-                    this.saveTargetPreset(presetNumber);
+                    if (!('ontouchstart' in window)) {
+                        e.preventDefault();
+                        this.saveTargetPreset(presetNumber);
+                    }
                 });
             }
         });
@@ -1057,6 +1128,27 @@ class MortarCalculator {
         this.createChargeTabs();
         this.loadBallisticData();
         this.updateGridReferences();
+        this.setupDeviceSpecificUI();
+    }
+
+    setupDeviceSpecificUI() {
+        // Detect if device supports touch
+        const isTouchDevice = ('ontouchstart' in window) || 
+                             (navigator.maxTouchPoints > 0) || 
+                             (navigator.msMaxTouchPoints > 0);
+        
+        if (isTouchDevice) {
+            // Show mobile instructions
+            document.querySelectorAll('.desktop-instructions').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.mobile-instructions').forEach(el => el.style.display = 'inline');
+            
+            // Add mobile-friendly class to body
+            document.body.classList.add('touch-device');
+        } else {
+            // Show desktop instructions
+            document.querySelectorAll('.desktop-instructions').forEach(el => el.style.display = 'inline');
+            document.querySelectorAll('.mobile-instructions').forEach(el => el.style.display = 'none');
+        }
     }
 
     updateShellInfo() {
@@ -1708,6 +1800,9 @@ class MortarCalculator {
 
         // Update button appearance
         this.updatePresetButtonStatus(presetNumber);
+        
+        // Update active preset status
+        this.updateActivePresetStatus();
 
         // Show success message
         this.showMessage(LANGUAGE_DATA[currentLanguage].presetSavedMessage.replace('{0}', presetNumber), 'success');
@@ -1728,6 +1823,9 @@ class MortarCalculator {
 
         // Update grid reference display
         this.updateGridReferences();
+        
+        // Update active preset status
+        this.updateActivePresetStatus();
 
         // Trigger calculation if inputs are valid
         if (this.validateInputs()) {
@@ -1806,9 +1904,46 @@ class MortarCalculator {
         for (let i = 1; i <= 8; i++) {
             this.updatePresetButtonStatus(i);
         }
+        
+        // Update active preset status (will remove all highlights)
+        this.updateActivePresetStatus();
 
         // Show success message
         this.showMessage(LANGUAGE_DATA[currentLanguage].clearTargetMessage, 'success');
+    }
+
+    updateActivePresetStatus() {
+        // Get current target values
+        const currentX = this.targetX.value;
+        const currentY = this.targetY.value;
+        const currentAlt = this.targetAlt.value;
+        
+        // Remove active-preset class from all buttons first
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.classList.remove('active-preset');
+        });
+        
+        // If any field is empty, don't highlight any preset
+        if (!currentX || !currentY || !currentAlt) {
+            return;
+        }
+        
+        // Check each preset for matching values
+        for (let i = 1; i <= 8; i++) {
+            const preset = this.targetPresets[i];
+            if (preset && 
+                preset.x === currentX && 
+                preset.y === currentY && 
+                preset.alt === currentAlt) {
+                
+                // Found matching preset - highlight it
+                const button = document.querySelector(`.preset-btn[data-preset="${i}"]`);
+                if (button) {
+                    button.classList.add('active-preset');
+                }
+                break; // Only highlight the first match
+            }
+        }
     }
 
     showMessage(message, type = 'info') {
