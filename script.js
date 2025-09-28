@@ -44,7 +44,8 @@ const LANGUAGE_DATA = {
         presetSavedMessage: "บันทึกเป้าหมาย {0} เรียบร้อยแล้ว",
         presetLoadedMessage: "โหลดเป้าหมาย {0} เรียบร้อยแล้ว",
         clearTarget: "เคลียทั้งหมด",
-        clearTargetMessage: "เคลียข้อมูลเป้าหมายและเป้าหมายที่บันทึกไว้ทั้งหมดเรียบร้อยแล้ว"
+        clearTargetMessage: "เคลียข้อมูลเป้าหมายและเป้าหมายที่บันทึกไว้ทั้งหมดเรียบร้อยแล้ว",
+        videoTutorial: "📺 วิดีโอสอนการใช้งาน"
     },
     en: {
         title: "Mortar Calculator",
@@ -90,7 +91,8 @@ const LANGUAGE_DATA = {
         presetSavedMessage: "Target {0} saved successfully",
         presetLoadedMessage: "Target {0} loaded successfully",
         clearTarget: "Clear All",
-        clearTargetMessage: "All target data and saved presets cleared successfully"
+        clearTargetMessage: "All target data and saved presets cleared successfully",
+        videoTutorial: "📺 Video Tutorial"
     }
 };
 
