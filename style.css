@@ -44,6 +44,7 @@ body {
     margin-bottom: 8px;
     overflow-x: auto;
     padding-bottom: 2px;
+    flex-wrap: nowrap;
 }
 
 .preset-btn {
@@ -835,17 +836,22 @@ footer {
 /* Mobile adjustments for preset buttons */
 @media (max-width: 480px) {
     .preset-buttons {
-        gap: 3px;
+        gap: 2px;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        overflow-x: visible;
     }
     
     .preset-btn {
-        min-width: 32px;
-        min-height: 36px;
-        padding: 4px 5px;
+        min-width: 28px;
+        max-width: 32px;
+        min-height: 32px;
+        padding: 3px 4px;
         touch-action: manipulation;
         user-select: none;
         -webkit-user-select: none;
         -webkit-touch-callout: none;
+        flex: 0 1 calc(11.11% - 2px);
     }
     
     .preset-number {
@@ -853,12 +859,35 @@ footer {
     }
     
     .preset-status {
-        font-size: 0.5rem;
+        font-size: 0.45rem;
     }
     
     .preset-instructions small {
         font-size: 0.6rem;
         line-height: 1.3;
+    }
+}
+
+/* Extra small mobile screens */
+@media (max-width: 360px) {
+    .preset-buttons {
+        gap: 1px;
+    }
+    
+    .preset-btn {
+        min-width: 26px;
+        max-width: 30px;
+        min-height: 30px;
+        padding: 2px 3px;
+        flex: 0 1 calc(11.11% - 1px);
+    }
+    
+    .preset-number {
+        font-size: 0.75rem;
+    }
+    
+    .preset-status {
+        font-size: 0.4rem;
     }
 }
 
