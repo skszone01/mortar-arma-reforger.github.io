@@ -912,14 +912,14 @@ footer {
 /* YouTube Tutorial Section */
 .youtube-tutorial {
     margin-top: 15px;
-    background: rgba(255, 165, 0, 0.15);
-    border: 2px solid rgba(255, 165, 0, 0.4);
+    background: transparent;
+    border: none;
     border-radius: 10px;
     padding: 12px;
 }
 
 .youtube-tutorial h4 {
-    color: #f59e0b;
+    color: #c9d1d9;
     font-size: 0.9rem;
     margin: 0 0 10px 0;
     text-transform: uppercase;
