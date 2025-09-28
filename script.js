@@ -35,7 +35,16 @@ const LANGUAGE_DATA = {
         timeSec: "เวลา (วิ)",
         dispersion: "การกระจาย",
         footer: "เครื่องคำนวณมอร์ต้าร์ ARMA REFORGER v1.0 | อิงจากข้อมูลลิสติกในเกม",
-        createdBy: "สร้างโดย:"
+        createdBy: "สร้างโดย:",
+        targetPresets: "🎯 เป้าหมายที่บันทึกไว้",
+        presetInstructions: "คลิกซ้าย: โหลด • คลิกขวา: บันทึก • ✗: เคลียทั้งหมด",
+        presetSaved: "บันทึกเป้าหมาย",
+        presetLoaded: "โหลดเป้าหมาย",
+        presetEmpty: "ว่าง",
+        presetSavedMessage: "บันทึกเป้าหมาย {0} เรียบร้อยแล้ว",
+        presetLoadedMessage: "โหลดเป้าหมาย {0} เรียบร้อยแล้ว",
+        clearTarget: "เคลียทั้งหมด",
+        clearTargetMessage: "เคลียข้อมูลเป้าหมายและเป้าหมายที่บันทึกไว้ทั้งหมดเรียบร้อยแล้ว"
     },
     en: {
         title: "Mortar Calculator",
@@ -72,7 +81,16 @@ const LANGUAGE_DATA = {
         timeSec: "Time (sec)",
         dispersion: "Dispersion",
         footer: "ARMA REFORGER Mortar Calculator v1.0 | Based on in-game ballistic data",
-        createdBy: "Created by:"
+        createdBy: "Created by:",
+        targetPresets: "🎯 Target Presets",
+        presetInstructions: "Left-click: Load • Right-click: Save • ✗: Clear All",
+        presetSaved: "Saved",
+        presetLoaded: "Loaded",
+        presetEmpty: "Empty",
+        presetSavedMessage: "Target {0} saved successfully",
+        presetLoadedMessage: "Target {0} loaded successfully",
+        clearTarget: "Clear All",
+        clearTargetMessage: "All target data and saved presets cleared successfully"
     }
 };
 
@@ -109,6 +127,10 @@ function updateLanguageDisplay() {
     // Update shell info if calculator is initialized
     if (window.mortarCalculator && window.mortarCalculator.updateShellInfo) {
         window.mortarCalculator.updateShellInfo();
+        // Update preset button statuses with new language (exclude clear button)
+        for (let i = 1; i <= 8; i++) {
+            window.mortarCalculator.updatePresetButtonStatus(i);
+        }
     }
 }
 
@@ -919,9 +941,11 @@ class MortarCalculator {
         this.currentMortarType = 'original';  // ประเภทมอร์ต้าร์ (original หรือ mod)
         this.currentShell = 'M821';           // ประเภทกระสุน
         this.currentCharge = 0;               // ระดับประจุ (Charge)
+        this.targetPresets = {};              // เก็บข้อมูลเป้าหมายที่บันทึกไว้
         this.initializeElements();
         this.bindEvents();
         this.loadInitialData();
+        this.loadTargetPresets();
     }
 
     initializeElements() {
@@ -954,6 +978,9 @@ class MortarCalculator {
         // Table elements
         this.chargeTabsEl = document.getElementById('charge-tabs');
         this.ballisticTbody = document.getElementById('ballistic-tbody');
+        
+        // Preset elements
+        this.presetButtons = document.querySelectorAll('.preset-btn');
     }
 
     bindEvents() {
@@ -996,6 +1023,32 @@ class MortarCalculator {
                     this.calculate();
                 }
             });
+        });
+
+        // Target preset buttons
+        this.presetButtons.forEach(btn => {
+            if (btn.dataset.preset === 'clear') {
+                // Clear button
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.clearTargetData();
+                });
+            } else {
+                // Regular preset buttons
+                // Left click: Load preset
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const presetNumber = parseInt(btn.dataset.preset);
+                    this.loadTargetPreset(presetNumber);
+                });
+
+                // Right click: Save preset
+                btn.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    const presetNumber = parseInt(btn.dataset.preset);
+                    this.saveTargetPreset(presetNumber);
+                });
+            }
         });
     }
 
@@ -1631,6 +1684,189 @@ class MortarCalculator {
     showError(message) {
         // Simple error display - could be enhanced with a proper toast system
         alert(message);
+    }
+
+    // Target Preset Management Functions
+    saveTargetPreset(presetNumber) {
+        // Get current target values
+        const targetData = {
+            x: this.targetX.value,
+            y: this.targetY.value,
+            alt: this.targetAlt.value,
+            timestamp: new Date().getTime()
+        };
+
+        // Validate that we have data to save
+        if (!targetData.x || !targetData.y || !targetData.alt) {
+            this.showMessage(LANGUAGE_DATA[currentLanguage].presetSavedMessage.replace('{0}', presetNumber) + ' - กรุณากรอกข้อมูลเป้าหมายให้ครบ', 'warning');
+            return;
+        }
+
+        // Save to memory and localStorage
+        this.targetPresets[presetNumber] = targetData;
+        localStorage.setItem('mortarTargetPresets', JSON.stringify(this.targetPresets));
+
+        // Update button appearance
+        this.updatePresetButtonStatus(presetNumber);
+
+        // Show success message
+        this.showMessage(LANGUAGE_DATA[currentLanguage].presetSavedMessage.replace('{0}', presetNumber), 'success');
+    }
+
+    loadTargetPreset(presetNumber) {
+        const preset = this.targetPresets[presetNumber];
+        
+        if (!preset) {
+            this.showMessage(`เป้าหมาย ${presetNumber} ยังไม่มีข้อมูล`, 'warning');
+            return;
+        }
+
+        // Load values into input fields
+        this.targetX.value = preset.x;
+        this.targetY.value = preset.y;
+        this.targetAlt.value = preset.alt;
+
+        // Update grid reference display
+        this.updateGridReferences();
+
+        // Trigger calculation if inputs are valid
+        if (this.validateInputs()) {
+            this.calculate();
+        }
+
+        // Show success message
+        this.showMessage(LANGUAGE_DATA[currentLanguage].presetLoadedMessage.replace('{0}', presetNumber), 'success');
+    }
+
+    loadTargetPresets() {
+        // Load presets from localStorage
+        try {
+            const saved = localStorage.getItem('mortarTargetPresets');
+            if (saved) {
+                this.targetPresets = JSON.parse(saved);
+            }
+        } catch (e) {
+            console.warn('Failed to load target presets:', e);
+            this.targetPresets = {};
+        }
+
+        // Update all button statuses (exclude clear button)
+        for (let i = 1; i <= 8; i++) {
+            this.updatePresetButtonStatus(i);
+        }
+    }
+
+    updatePresetButtonStatus(presetNumber) {
+        const button = document.querySelector(`.preset-btn[data-preset="${presetNumber}"]`);
+        if (!button) return;
+
+        const statusSpan = button.querySelector('.preset-status');
+        const preset = this.targetPresets[presetNumber];
+
+        if (preset) {
+            button.classList.add('has-data');
+            const date = new Date(preset.timestamp);
+            const timeStr = date.toLocaleTimeString('th-TH', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            statusSpan.textContent = currentLanguage === 'th' ? 'มีข้อมูล' : 'Saved';
+            button.title = `Grid: ${preset.x}, ${preset.y} Alt: ${preset.alt}m (${timeStr})`;
+        } else {
+            button.classList.remove('has-data');
+            statusSpan.textContent = LANGUAGE_DATA[currentLanguage].presetEmpty;
+            button.title = currentLanguage === 'th' ? 
+                'คลิกซ้าย: โหลด • คลิกขวา: บันทึก' : 
+                'Left-click: Load • Right-click: Save';
+        }
+    }
+
+    clearTargetData() {
+        // Clear all target input fields
+        this.targetX.value = '';
+        this.targetY.value = '';
+        this.targetAlt.value = '';
+
+        // Update grid reference display
+        this.updateGridReferences();
+
+        // Hide results section
+        this.resultsSection.classList.remove('show');
+
+        // Clear validation states
+        [this.targetX, this.targetY, this.targetAlt].forEach(input => {
+            input.classList.remove('error', 'success');
+        });
+
+        // Clear all saved target presets (1-8)
+        this.targetPresets = {};
+        localStorage.removeItem('mortarTargetPresets');
+
+        // Update all preset button statuses to show "Empty"
+        for (let i = 1; i <= 8; i++) {
+            this.updatePresetButtonStatus(i);
+        }
+
+        // Show success message
+        this.showMessage(LANGUAGE_DATA[currentLanguage].clearTargetMessage, 'success');
+    }
+
+    showMessage(message, type = 'info') {
+        // Create a simple toast message
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        
+        // Style the toast
+        Object.assign(toast.style, {
+            position: 'fixed',
+            top: '20px',
+            right: '20px',
+            padding: '12px 20px',
+            borderRadius: '6px',
+            color: '#fff',
+            fontWeight: 'bold',
+            zIndex: '10000',
+            maxWidth: '300px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
+            opacity: '0',
+            transform: 'translateY(-20px)',
+            transition: 'all 0.3s ease'
+        });
+
+        // Set background color based on type
+        switch (type) {
+            case 'success':
+                toast.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+                break;
+            case 'warning':
+                toast.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+                break;
+            case 'error':
+                toast.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                break;
+            default:
+                toast.style.background = 'linear-gradient(135deg, #3b82f6, #1d4ed8)';
+        }
+
+        document.body.appendChild(toast);
+
+        // Animate in
+        requestAnimationFrame(() => {
+            toast.style.opacity = '1';
+            toast.style.transform = 'translateY(0)';
+        });
+
+        // Remove after 3 seconds
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateY(-20px)';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, 3000);
     }
 }
 

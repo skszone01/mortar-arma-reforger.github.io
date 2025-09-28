@@ -20,6 +20,114 @@ body {
     padding: 10px;
 }
 
+/* Target Presets */
+.target-presets {
+    background: rgba(220, 38, 38, 0.15);
+    border: 2px solid rgba(220, 38, 38, 0.4);
+    border-radius: 8px;
+    padding: 8px;
+    margin: 12px 0;
+}
+
+.target-presets h4 {
+    color: #dc2626;
+    font-size: 0.8rem;
+    margin: 0 0 6px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+.preset-buttons {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+}
+
+.preset-btn {
+    background: rgba(48, 54, 61, 0.7);
+    border: 2px solid #30363d;
+    border-radius: 6px;
+    padding: 4px 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 32px;
+    min-height: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    font-family: 'Consolas', monospace;
+    flex-shrink: 0;
+}
+
+.preset-btn:hover {
+    border-color: #dc2626;
+    background: rgba(220, 38, 38, 0.2);
+    transform: translateY(-1px);
+}
+
+.preset-btn.has-data {
+    background: rgba(220, 38, 38, 0.3);
+    border-color: #dc2626;
+}
+
+.preset-btn.has-data:hover {
+    background: rgba(220, 38, 38, 0.5);
+}
+
+.preset-number {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #dc2626;
+    margin-bottom: 1px;
+}
+
+.preset-status {
+    font-size: 0.5rem;
+    color: #8b949e;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    line-height: 1;
+}
+
+.preset-btn.has-data .preset-status {
+    color: #fbbf24;
+}
+
+.clear-btn {
+    background: rgba(239, 68, 68, 0.3) !important;
+    border-color: #ef4444 !important;
+}
+
+.clear-btn:hover {
+    background: rgba(239, 68, 68, 0.5) !important;
+    border-color: #dc2626 !important;
+}
+
+.clear-btn .preset-number {
+    color: #ef4444 !important;
+    font-size: 1rem !important;
+}
+
+.clear-btn .preset-status {
+    color: #fca5a5 !important;
+}
+
+.preset-instructions {
+    text-align: center;
+    margin-top: 4px;
+}
+
+.preset-instructions small {
+    color: #6e7681;
+    font-size: 0.65rem;
+    font-style: italic;
+}
+
 /* Numpad Info Box */
 .numpad-info-box {
     background: #232323;
@@ -688,6 +796,41 @@ footer {
     
     th, td {
         padding: 10px 15px;
+    }
+    
+    .preset-btn {
+        min-width: 36px;
+        min-height: 36px;
+        padding: 5px 7px;
+    }
+    
+    .preset-number {
+        font-size: 1rem;
+    }
+    
+    .preset-status {
+        font-size: 0.55rem;
+    }
+}
+
+/* Mobile adjustments for preset buttons */
+@media (max-width: 480px) {
+    .preset-buttons {
+        gap: 3px;
+    }
+    
+    .preset-btn {
+        min-width: 28px;
+        min-height: 28px;
+        padding: 3px 4px;
+    }
+    
+    .preset-number {
+        font-size: 0.8rem;
+    }
+    
+    .preset-status {
+        font-size: 0.45rem;
     }
 }
 
