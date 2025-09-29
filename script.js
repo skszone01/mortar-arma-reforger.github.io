@@ -10,6 +10,7 @@ const LANGUAGE_DATA = {
         smokeShell: "กระสุนควัน", 
         illuminationShell: "กระสุนส่องสว่าง",
         "0832AyShell": "กระสุนระเบิด 0-832Ay",
+        "A832AYShell": "กระสุนควัน A-832AY",
         weaponPosition: "📍 ตำแหน่งอาวุธ",
         weapon: "อาวุธ",
         targetPosition: "🎯 ตำแหน่งเป้าหมาย", 
@@ -56,7 +57,8 @@ const LANGUAGE_DATA = {
         heShell: "HE shell",
         smokeShell: "Smoke shell",
         illuminationShell: "Illumination shell",
-        "0832AyShell": "0-832Ay HE shell", 
+        "0832AyShell": "0-832Ay HE shell",
+        "A832AYShell": "A-832AY Smoke shell", 
         weaponPosition: "📍 Weapon Position",
         weapon: "WEAPON",
         targetPosition: "🎯 Target Position",
@@ -392,6 +394,7 @@ const BALLISTIC_DATA = {
                 { range: 2400, elevation: 855, timeOfFlight: 27.4, dispersion: "52m" }
             ]
         },
+
         "0-832Ay": {
             // 0 Ring - Original (Dispersion: 8m ตามภาพที่ 2)
             0: [
@@ -474,6 +477,60 @@ const BALLISTIC_DATA = {
                 { range: 2100, elevation: 950, timeOfFlight: 27.9, dispersion: "26m" },
                 { range: 2200, elevation: 896, timeOfFlight: 26.9, dispersion: "34m" },
                 { range: 2300, elevation: 820, timeOfFlight: 25.3, dispersion: "65m" }
+            ]
+        },
+        "A-832AY": {
+            // 1 Ring - Original (Dispersion: 7m ตามภาพที่ 1)
+            1: [
+                { range: 50, elevation: 1450, timeOfFlight: 14.1, dispersion: "51m" },
+                { range: 100, elevation: 1399, timeOfFlight: 14, dispersion: "52m" },
+                { range: 150, elevation: 1347, timeOfFlight: 13.9, dispersion: "55m" },
+                { range: 200, elevation: 1292, timeOfFlight: 13.8, dispersion: "57m" },
+                { range: 250, elevation: 1235, timeOfFlight: 13.6, dispersion: "63m" },
+                { range: 300, elevation: 1172, timeOfFlight: 13.3, dispersion: "70m" },
+                { range: 350, elevation: 1102, timeOfFlight: 12.9, dispersion: "82m" },
+                { range: 400, elevation: 1020, timeOfFlight: 12.4, dispersion: "122m" },
+                { range: 450, elevation: 898, timeOfFlight: 11.4, dispersion: "0m" }
+            ],
+            // 2 Ring - Original (Dispersion: 12m ตามภาพที่ 2)  
+            2: [
+                { range: 200, elevation: 1381, timeOfFlight: 18.4, dispersion: "31m" },
+                { range: 250, elevation: 1319, timeOfFlight: 18.2, dispersion: "33m" },
+                { range: 300, elevation: 1252, timeOfFlight: 17.9, dispersion: "34m" },
+                { range: 350, elevation: 1179, timeOfFlight: 17.5, dispersion: "38m" },
+                { range: 400, elevation: 1097, timeOfFlight: 16.9, dispersion: "57m" },
+                { range: 450, elevation: 993, timeOfFlight: 16, dispersion: "67m" },
+                { range: 500, elevation: 805, timeOfFlight: 13.8, dispersion: "0m" }
+            ],
+            // 3 Ring - Original (Dispersion: 18m ตามภาพที่ 3)
+            3: [
+                { range: 300, elevation: 1387, timeOfFlight: 23.5, dispersion: "19m" },
+                { range: 400, elevation: 1348, timeOfFlight: 23.8, dispersion: "20m" },
+                { range: 500, elevation: 1308, timeOfFlight: 23.2, dispersion: "21m" },
+                { range: 600, elevation: 1266, timeOfFlight: 22.9, dispersion: "22m" },
+                { range: 700, elevation: 1222, timeOfFlight: 22.7, dispersion: "24m" },
+                { range: 800, elevation: 1175, timeOfFlight: 22.3, dispersion: "26m" },
+                { range: 900, elevation: 1123, timeOfFlight: 21.8, dispersion: "28m" },
+                { range: 1000, elevation: 1065, timeOfFlight: 21.3, dispersion: "32m" },
+                { range: 1100, elevation: 994, timeOfFlight: 20.4, dispersion: "40m" },
+                { range: 1200, elevation: 902, timeOfFlight: 19.2, dispersion: "64m" }
+            ],
+            // 4 Ring - Original (Dispersion: 24m ตามภาพที่ 4)
+            4: [
+                { range: 400, elevation: 1387, timeOfFlight: 27.3, dispersion: "15m" },
+                { range: 500, elevation: 1357, timeOfFlight: 27.2, dispersion: "15m" },
+                { range: 600, elevation: 1327, timeOfFlight: 27.1, dispersion: "15m" },
+                { range: 700, elevation: 1296, timeOfFlight: 26.9, dispersion: "16m" },
+                { range: 800, elevation: 1264, timeOfFlight: 26.7, dispersion: "16m" },
+                { range: 900, elevation: 1231, timeOfFlight: 26.5, dispersion: "17m" },
+                { range: 1000, elevation: 1196, timeOfFlight: 26.2, dispersion: "18m" },
+                { range: 1100, elevation: 1159, timeOfFlight: 25.8, dispersion: "20m" },
+                { range: 1200, elevation: 1119, timeOfFlight: 25.4, dispersion: "22m" },
+                { range: 1300, elevation: 1075, timeOfFlight: 24.9, dispersion: "24m" },
+                { range: 1400, elevation: 1026, timeOfFlight: 24.3, dispersion: "27m" },
+                { range: 1500, elevation: 969, timeOfFlight: 23.5, dispersion: "33m" },
+                { range: 1600, elevation: 896, timeOfFlight: 22.3, dispersion: "50m" },
+                { range: 1700, elevation: 753, timeOfFlight: 19.8, dispersion: "0m" }
             ]
         }
     },
@@ -931,6 +988,86 @@ const BALLISTIC_DATA = {
                 { range: 3800, elevation: 824, timeOfFlight: 34.5, dispersion: "24m" },
                 { range: 3900, elevation: 766, timeOfFlight: 32.9, dispersion: "0m" }
             ]
+        },
+        "A-832AY": {
+            // 1 Ring - MOD A-832AY (ตามภาพใหม่ - Ring 1)
+            1: [
+                { range: 50, elevation: 1450, timeOfFlight: 14.1, dispersion: "51m" },
+                { range: 100, elevation: 1399, timeOfFlight: 14.0, dispersion: "52m" },
+                { range: 150, elevation: 1347, timeOfFlight: 13.9, dispersion: "55m" },
+                { range: 200, elevation: 1292, timeOfFlight: 13.8, dispersion: "57m" },
+                { range: 250, elevation: 1235, timeOfFlight: 13.6, dispersion: "63m" },
+                { range: 300, elevation: 1172, timeOfFlight: 13.3, dispersion: "70m" },
+                { range: 350, elevation: 1102, timeOfFlight: 12.9, dispersion: "82m" },
+                { range: 400, elevation: 1020, timeOfFlight: 12.4, dispersion: "122m" },
+                { range: 450, elevation: 898, timeOfFlight: 11.4, dispersion: "0m" }
+            ],
+            // 2 Ring - MOD A-832AY (ตามภาพใหม่ - Ring 2)
+            2: [
+                { range: 200, elevation: 1429, timeOfFlight: 24.3, dispersion: "18m" },
+                { range: 300, elevation: 1393, timeOfFlight: 24.2, dispersion: "18m" },
+                { range: 400, elevation: 1357, timeOfFlight: 24.1, dispersion: "19m" },
+                { range: 500, elevation: 1319, timeOfFlight: 23.9, dispersion: "20m" },
+                { range: 600, elevation: 1279, timeOfFlight: 23.7, dispersion: "20m" },
+                { range: 700, elevation: 1238, timeOfFlight: 23.4, dispersion: "21m" },
+                { range: 800, elevation: 1194, timeOfFlight: 23.1, dispersion: "22m" },
+                { range: 900, elevation: 1147, timeOfFlight: 22.7, dispersion: "24m" },
+                { range: 1000, elevation: 1096, timeOfFlight: 22.2, dispersion: "28m" },
+                { range: 1100, elevation: 1037, timeOfFlight: 21.6, dispersion: "34m" },
+                { range: 1200, elevation: 966, timeOfFlight: 20.7, dispersion: "46m" },
+                { range: 1300, elevation: 862, timeOfFlight: 19.2, dispersion: "106m" },
+                { range: 1300, elevation: 862, timeOfFlight: 19.2, dispersion: "0m" }
+            ],
+            // 3 Ring - MOD A-832AY (ตามภาพใหม่ - Ring 3)
+            3: [
+                { range: 300, elevation: 1433, timeOfFlight: 31.1, dispersion: "12m" },
+                { range: 400, elevation: 1410, timeOfFlight: 31.1, dispersion: "11m" },
+                { range: 500, elevation: 1387, timeOfFlight: 31.0, dispersion: "12m" },
+                { range: 600, elevation: 1364, timeOfFlight: 30.9, dispersion: "12m" },
+                { range: 700, elevation: 1340, timeOfFlight: 30.8, dispersion: "12m" },
+                { range: 800, elevation: 1316, timeOfFlight: 30.6, dispersion: "13m" },
+                { range: 900, elevation: 1290, timeOfFlight: 30.5, dispersion: "12m" },
+                { range: 1000, elevation: 1265, timeOfFlight: 30.3, dispersion: "14m" },
+                { range: 1100, elevation: 1238, timeOfFlight: 30.1, dispersion: "14m" },
+                { range: 1200, elevation: 1210, timeOfFlight: 29.8, dispersion: "14m" },
+                { range: 1300, elevation: 1181, timeOfFlight: 29.5, dispersion: "14m" },
+                { range: 1400, elevation: 1151, timeOfFlight: 29.2, dispersion: "16m" },
+                { range: 1500, elevation: 1119, timeOfFlight: 28.8, dispersion: "17m" },
+                { range: 1600, elevation: 1084, timeOfFlight: 28.4, dispersion: "18m" },
+                { range: 1700, elevation: 1047, timeOfFlight: 27.8, dispersion: "20m" },
+                { range: 1800, elevation: 1005, timeOfFlight: 27.2, dispersion: "23m" },
+                { range: 1900, elevation: 956, timeOfFlight: 26.4, dispersion: "27m" },
+                { range: 2000, elevation: 898, timeOfFlight: 25.4, dispersion: "38m" },
+                { range: 2100, elevation: 810, timeOfFlight: 23.7, dispersion: "0m" }
+            ],
+            // 4 Ring - MOD A-832AY (ตามภาพใหม่ - Ring 4) 
+            4: [
+                { range: 400, elevation: 1432, timeOfFlight: 36.5, dispersion: "8m" },
+                { range: 500, elevation: 1415, timeOfFlight: 36.5, dispersion: "8m" },
+                { range: 600, elevation: 1398, timeOfFlight: 36.4, dispersion: "9m" },
+                { range: 700, elevation: 1380, timeOfFlight: 36.3, dispersion: "9m" },
+                { range: 800, elevation: 1362, timeOfFlight: 36.2, dispersion: "9m" },
+                { range: 900, elevation: 1344, timeOfFlight: 36.1, dispersion: "9m" },
+                { range: 1000, elevation: 1326, timeOfFlight: 36.0, dispersion: "9m" },
+                { range: 1100, elevation: 1307, timeOfFlight: 35.9, dispersion: "9m" },
+                { range: 1200, elevation: 1288, timeOfFlight: 35.7, dispersion: "10m" },
+                { range: 1300, elevation: 1269, timeOfFlight: 35.6, dispersion: "11m" },
+                { range: 1400, elevation: 1248, timeOfFlight: 35.4, dispersion: "10m" },
+                { range: 1500, elevation: 1228, timeOfFlight: 35.2, dispersion: "11m" },
+                { range: 1600, elevation: 1206, timeOfFlight: 34.9, dispersion: "11m" },
+                { range: 1700, elevation: 1184, timeOfFlight: 34.7, dispersion: "11m" },
+                { range: 1800, elevation: 1161, timeOfFlight: 34.4, dispersion: "12m" },
+                { range: 1900, elevation: 1138, timeOfFlight: 34.1, dispersion: "12m" },
+                { range: 2000, elevation: 1112, timeOfFlight: 33.7, dispersion: "13m" },
+                { range: 2100, elevation: 1086, timeOfFlight: 33.3, dispersion: "13m" },
+                { range: 2200, elevation: 1058, timeOfFlight: 32.9, dispersion: "15m" },
+                { range: 2300, elevation: 1028, timeOfFlight: 32.4, dispersion: "16m" },
+                { range: 2400, elevation: 995, timeOfFlight: 31.8, dispersion: "18m" },
+                { range: 2500, elevation: 958, timeOfFlight: 31.1, dispersion: "19m" },
+                { range: 2600, elevation: 916, timeOfFlight: 30.2, dispersion: "23m" },
+                { range: 2700, elevation: 865, timeOfFlight: 29.1, dispersion: "32m" },
+                { range: 2800, elevation: 792, timeOfFlight: 27.5, dispersion: "0m" }
+            ]
         }
     }
 };
@@ -1171,6 +1308,9 @@ class MortarCalculator {
                     break;
                 case '0-832Ay':
                     shellText = texts["0832AyShell"];
+                    break;
+                case 'A-832AY':
+                    shellText = texts["A832AYShell"];
                     break;
                 default:
                     shellText = texts.heShell;
