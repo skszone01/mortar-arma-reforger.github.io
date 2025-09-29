@@ -11,6 +11,7 @@ const LANGUAGE_DATA = {
         illuminationShell: "กระสุนส่องสว่าง",
         "0832AyShell": "กระสุนระเบิด 0-832Ay",
         "A832AYShell": "กระสุนควัน A-832AY",
+        "C832CShell": "กระสุนส่องสว่าง C-832C",
         weaponPosition: "📍 ตำแหน่งอาวุธ",
         weapon: "อาวุธ",
         targetPosition: "🎯 ตำแหน่งเป้าหมาย", 
@@ -58,7 +59,8 @@ const LANGUAGE_DATA = {
         smokeShell: "Smoke shell",
         illuminationShell: "Illumination shell",
         "0832AyShell": "0-832Ay HE shell",
-        "A832AYShell": "A-832AY Smoke shell", 
+        "A832AYShell": "A-832AY Smoke shell",
+        "C832CShell": "C-832C Illumination shell", 
         weaponPosition: "📍 Weapon Position",
         weapon: "WEAPON",
         targetPosition: "🎯 Target Position",
@@ -531,6 +533,75 @@ const BALLISTIC_DATA = {
                 { range: 1500, elevation: 969, timeOfFlight: 23.5, dispersion: "33m" },
                 { range: 1600, elevation: 896, timeOfFlight: 22.3, dispersion: "50m" },
                 { range: 1700, elevation: 753, timeOfFlight: 19.8, dispersion: "0m" }
+            ]
+        },
+
+        "C-832C": {
+            // 1 Ring - Original C-832C Illumination (ตามภาพ Ring 1 - Dispersion: 9m)
+            1: [
+                { range: 100, elevation: 1421, timeOfFlight: 15.2, dispersion: "40m" },
+                { range: 150, elevation: 1381, timeOfFlight: 16.3, dispersion: "42m" },
+                { range: 200, elevation: 1339, timeOfFlight: 16.2, dispersion: "43m" },
+                { range: 250, elevation: 1296, timeOfFlight: 16.1, dispersion: "46m" },
+                { range: 300, elevation: 1251, timeOfFlight: 15.9, dispersion: "48m" },
+                { range: 350, elevation: 1203, timeOfFlight: 15.7, dispersion: "52m" },
+                { range: 400, elevation: 1151, timeOfFlight: 15.4, dispersion: "58m" },
+                { range: 450, elevation: 1093, timeOfFlight: 15, dispersion: "65m" },
+                { range: 500, elevation: 1028, timeOfFlight: 14.5, dispersion: "83m" },
+                { range: 550, elevation: 945, timeOfFlight: 13.8, dispersion: "146m" },
+                { range: 600, elevation: 799, timeOfFlight: 12.3, dispersion: "0m" }
+            ],
+            // 2 Ring - Original C-832C Illumination (ตามภาพ Ring 2 - Dispersion: 17m)
+            2: [
+                { range: 200, elevation: 1417, timeOfFlight: 23.6, dispersion: "21m" },
+                { range: 300, elevation: 1374, timeOfFlight: 23.5, dispersion: "22m" },
+                { range: 400, elevation: 1330, timeOfFlight: 23.3, dispersion: "23m" },
+                { range: 500, elevation: 1284, timeOfFlight: 23.1, dispersion: "24m" },
+                { range: 600, elevation: 1234, timeOfFlight: 22.8, dispersion: "25m" },
+                { range: 700, elevation: 1182, timeOfFlight: 22.4, dispersion: "29m" },
+                { range: 800, elevation: 1124, timeOfFlight: 21.9, dispersion: "32m" },
+                { range: 900, elevation: 1057, timeOfFlight: 21.3, dispersion: "36m" },
+                { range: 1000, elevation: 979, timeOfFlight: 20.4, dispersion: "48m" },
+                { range: 1100, elevation: 870, timeOfFlight: 18.9, dispersion: "89m" }
+            ],
+            // 3 Ring - Original C-832C Illumination (ตามภาพ Ring 3 - Dispersion: 24m)
+            3: [
+                { range: 300, elevation: 1411, timeOfFlight: 29, dispersion: "16m" },
+                { range: 400, elevation: 1380, timeOfFlight: 28.9, dispersion: "16m" },
+                { range: 500, elevation: 1348, timeOfFlight: 28.7, dispersion: "16m" },
+                { range: 600, elevation: 1315, timeOfFlight: 28.6, dispersion: "16m" },
+                { range: 700, elevation: 1281, timeOfFlight: 28.4, dispersion: "17m" },
+                { range: 800, elevation: 1246, timeOfFlight: 28.1, dispersion: "18m" },
+                { range: 900, elevation: 1209, timeOfFlight: 27.8, dispersion: "19m" },
+                { range: 1000, elevation: 1170, timeOfFlight: 27.4, dispersion: "21m" },
+                { range: 1100, elevation: 1128, timeOfFlight: 27, dispersion: "23m" },
+                { range: 1200, elevation: 1082, timeOfFlight: 26.5, dispersion: "25m" },
+                { range: 1300, elevation: 1031, timeOfFlight: 25.8, dispersion: "28m" },
+                { range: 1400, elevation: 973, timeOfFlight: 25, dispersion: "33m" },
+                { range: 1500, elevation: 903, timeOfFlight: 23.9, dispersion: "43m" },
+                { range: 1600, elevation: 807, timeOfFlight: 22.3, dispersion: "0m" }
+            ],
+            // 4 Ring - Original C-832C Illumination (ตามภาพ Ring 4 - Dispersion: 32m)
+            4: [
+                { range: 400, elevation: 1411, timeOfFlight: 35.3, dispersion: "12m" },
+                { range: 500, elevation: 1388, timeOfFlight: 35.2, dispersion: "12m" },
+                { range: 600, elevation: 1364, timeOfFlight: 35.1, dispersion: "11m" },
+                { range: 700, elevation: 1341, timeOfFlight: 35, dispersion: "13m" },
+                { range: 800, elevation: 1316, timeOfFlight: 34.8, dispersion: "13m" },
+                { range: 900, elevation: 1291, timeOfFlight: 34.7, dispersion: "13m" },
+                { range: 1000, elevation: 1265, timeOfFlight: 34.4, dispersion: "13m" },
+                { range: 1100, elevation: 1238, timeOfFlight: 34.2, dispersion: "14m" },
+                { range: 1200, elevation: 1210, timeOfFlight: 33.9, dispersion: "14m" },
+                { range: 1300, elevation: 1181, timeOfFlight: 33.6, dispersion: "15m" },
+                { range: 1400, elevation: 1150, timeOfFlight: 33.2, dispersion: "15m" },
+                { range: 1500, elevation: 1119, timeOfFlight: 32.8, dispersion: "17m" },
+                { range: 1600, elevation: 1085, timeOfFlight: 32.4, dispersion: "18m" },
+                { range: 1700, elevation: 1048, timeOfFlight: 31.8, dispersion: "19m" },
+                { range: 1800, elevation: 1009, timeOfFlight: 31.2, dispersion: "21m" },
+                { range: 1900, elevation: 965, timeOfFlight: 30.4, dispersion: "23m" },
+                { range: 2000, elevation: 917, timeOfFlight: 29.6, dispersion: "27m" },
+                { range: 2100, elevation: 860, timeOfFlight: 28.4, dispersion: "34m" },
+                { range: 2200, elevation: 787, timeOfFlight: 26.9, dispersion: "0m" }
             ]
         }
     },
@@ -1068,6 +1139,111 @@ const BALLISTIC_DATA = {
                 { range: 2700, elevation: 865, timeOfFlight: 29.1, dispersion: "32m" },
                 { range: 2800, elevation: 792, timeOfFlight: 27.5, dispersion: "0m" }
             ]
+        },
+        "C-832C": {
+            // Ring 1 - MOD C-832C Illumination (ตามภาพ Ring 1 - Dispersion: 15m)
+            1: [
+                { range: 150, elevation: 1429, timeOfFlight: 21.9, dispersion: "24m" },
+                { range: 200, elevation: 1405, timeOfFlight: 21.8, dispersion: "24m" },
+                { range: 250, elevation: 1381, timeOfFlight: 21.8, dispersion: "25m" },
+                { range: 300, elevation: 1356, timeOfFlight: 21.7, dispersion: "25m" },
+                { range: 350, elevation: 1331, timeOfFlight: 21.6, dispersion: "26m" },
+                { range: 400, elevation: 1305, timeOfFlight: 21.5, dispersion: "27m" },
+                { range: 450, elevation: 1278, timeOfFlight: 21.4, dispersion: "28m" },
+                { range: 500, elevation: 1250, timeOfFlight: 21.2, dispersion: "28m" },
+                { range: 550, elevation: 1222, timeOfFlight: 21.0, dispersion: "31m" },
+                { range: 600, elevation: 1191, timeOfFlight: 20.8, dispersion: "32m" },
+                { range: 650, elevation: 1159, timeOfFlight: 20.6, dispersion: "33m" },
+                { range: 700, elevation: 1126, timeOfFlight: 20.3, dispersion: "36m" },
+                { range: 750, elevation: 1090, timeOfFlight: 20.0, dispersion: "40m" },
+                { range: 800, elevation: 1050, timeOfFlight: 19.6, dispersion: "45m" },
+                { range: 850, elevation: 1005, timeOfFlight: 19.1, dispersion: "50m" },
+                { range: 900, elevation: 955, timeOfFlight: 18.6, dispersion: "63m" },
+                { range: 950, elevation: 892, timeOfFlight: 17.8, dispersion: "99m" },
+                { range: 1000, elevation: 800, timeOfFlight: 16.6, dispersion: "0m" }
+            ],
+            // Ring 2 - MOD C-832C Illumination (ตามภาพ Ring 2 - Dispersion: 28m)
+            2: [
+                { range: 300, elevation: 1424, timeOfFlight: 32.2, dispersion: "13m" },
+                { range: 400, elevation: 1398, timeOfFlight: 32.1, dispersion: "13m" },
+                { range: 500, elevation: 1371, timeOfFlight: 32.0, dispersion: "13m" },
+                { range: 600, elevation: 1344, timeOfFlight: 31.9, dispersion: "14m" },
+                { range: 700, elevation: 1316, timeOfFlight: 31.7, dispersion: "14m" },
+                { range: 800, elevation: 1287, timeOfFlight: 31.5, dispersion: "14m" },
+                { range: 900, elevation: 1257, timeOfFlight: 31.3, dispersion: "15m" },
+                { range: 1000, elevation: 1226, timeOfFlight: 31.0, dispersion: "16m" },
+                { range: 1100, elevation: 1194, timeOfFlight: 30.7, dispersion: "17m" },
+                { range: 1200, elevation: 1159, timeOfFlight: 30.4, dispersion: "18m" },
+                { range: 1300, elevation: 1123, timeOfFlight: 30.0, dispersion: "19m" },
+                { range: 1400, elevation: 1084, timeOfFlight: 29.5, dispersion: "21m" },
+                { range: 1500, elevation: 1042, timeOfFlight: 28.9, dispersion: "23m" },
+                { range: 1600, elevation: 995, timeOfFlight: 28.2, dispersion: "26m" },
+                { range: 1700, elevation: 942, timeOfFlight: 27.3, dispersion: "30m" },
+                { range: 1800, elevation: 879, timeOfFlight: 26.2, dispersion: "37m" },
+                { range: 1900, elevation: 796, timeOfFlight: 24.6, dispersion: "0m" }
+            ],
+            // Ring 3 - MOD C-832C Illumination (ตามภาพ Ring 3 - Dispersion: 39m)  
+            3: [
+                { range: 400, elevation: 1426, timeOfFlight: 40.4, dispersion: "10m" },
+                { range: 500, elevation: 1407, timeOfFlight: 40.3, dispersion: "10m" },
+                { range: 600, elevation: 1387, timeOfFlight: 40.2, dispersion: "9m" },
+                { range: 700, elevation: 1368, timeOfFlight: 40.1, dispersion: "10m" },
+                { range: 800, elevation: 1348, timeOfFlight: 40.0, dispersion: "10m" },
+                { range: 900, elevation: 1328, timeOfFlight: 39.9, dispersion: "11m" },
+                { range: 1000, elevation: 1307, timeOfFlight: 39.7, dispersion: "11m" },
+                { range: 1100, elevation: 1286, timeOfFlight: 39.5, dispersion: "11m" },
+                { range: 1200, elevation: 1264, timeOfFlight: 39.3, dispersion: "11m" },
+                { range: 1300, elevation: 1242, timeOfFlight: 39.1, dispersion: "12m" },
+                { range: 1400, elevation: 1219, timeOfFlight: 38.9, dispersion: "12m" },
+                { range: 1500, elevation: 1195, timeOfFlight: 38.6, dispersion: "12m" },
+                { range: 1600, elevation: 1170, timeOfFlight: 38.3, dispersion: "12m" },
+                { range: 1700, elevation: 1145, timeOfFlight: 37.9, dispersion: "13m" },
+                { range: 1800, elevation: 1118, timeOfFlight: 37.5, dispersion: "13m" },
+                { range: 1900, elevation: 1090, timeOfFlight: 37.1, dispersion: "14m" },
+                { range: 2000, elevation: 1061, timeOfFlight: 36.6, dispersion: "15m" },
+                { range: 2100, elevation: 1031, timeOfFlight: 36.1, dispersion: "17m" },
+                { range: 2200, elevation: 997, timeOfFlight: 35.5, dispersion: "17m" },
+                { range: 2300, elevation: 962, timeOfFlight: 34.8, dispersion: "19m" },
+                { range: 2400, elevation: 923, timeOfFlight: 34.0, dispersion: "21m" },
+                { range: 2500, elevation: 880, timeOfFlight: 33.1, dispersion: "23m" },
+                { range: 2600, elevation: 831, timeOfFlight: 31.9, dispersion: "27m" },
+                { range: 2700, elevation: 771, timeOfFlight: 30.5, dispersion: "0m" }
+            ],
+            // Ring 4 - MOD C-832C Illumination (ตามภาพ Ring 4 - Dispersion: 53m)
+            4: [
+                { range: 600, elevation: 1414, timeOfFlight: 50.3, dispersion: "7m" },
+                { range: 700, elevation: 1400, timeOfFlight: 50.3, dispersion: "8m" },
+                { range: 800, elevation: 1385, timeOfFlight: 50.2, dispersion: "7m" },
+                { range: 900, elevation: 1370, timeOfFlight: 50.1, dispersion: "7m" },
+                { range: 1000, elevation: 1355, timeOfFlight: 50.0, dispersion: "8m" },
+                { range: 1100, elevation: 1340, timeOfFlight: 49.9, dispersion: "8m" },
+                { range: 1200, elevation: 1324, timeOfFlight: 49.7, dispersion: "8m" },
+                { range: 1300, elevation: 1308, timeOfFlight: 49.6, dispersion: "8m" },
+                { range: 1400, elevation: 1292, timeOfFlight: 49.4, dispersion: "8m" },
+                { range: 1500, elevation: 1276, timeOfFlight: 49.2, dispersion: "8m" },
+                { range: 1600, elevation: 1260, timeOfFlight: 49.0, dispersion: "9m" },
+                { range: 1700, elevation: 1243, timeOfFlight: 48.8, dispersion: "9m" },
+                { range: 1800, elevation: 1225, timeOfFlight: 48.6, dispersion: "8m" },
+                { range: 1900, elevation: 1208, timeOfFlight: 48.3, dispersion: "9m" },
+                { range: 2000, elevation: 1190, timeOfFlight: 48.1, dispersion: "9m" },
+                { range: 2100, elevation: 1172, timeOfFlight: 47.8, dispersion: "10m" },
+                { range: 2200, elevation: 1153, timeOfFlight: 47.5, dispersion: "10m" },
+                { range: 2300, elevation: 1134, timeOfFlight: 47.1, dispersion: "10m" },
+                { range: 2400, elevation: 1114, timeOfFlight: 46.8, dispersion: "10m" },
+                { range: 2500, elevation: 1093, timeOfFlight: 46.4, dispersion: "10m" },
+                { range: 2600, elevation: 1072, timeOfFlight: 46.0, dispersion: "10m" },
+                { range: 2700, elevation: 1051, timeOfFlight: 45.5, dispersion: "11m" },
+                { range: 2800, elevation: 1028, timeOfFlight: 45.0, dispersion: "11m" },
+                { range: 2900, elevation: 1005, timeOfFlight: 44.5, dispersion: "12m" },
+                { range: 3000, elevation: 981, timeOfFlight: 44.0, dispersion: "13m" },
+                { range: 3100, elevation: 955, timeOfFlight: 43.3, dispersion: "13m" },
+                { range: 3200, elevation: 928, timeOfFlight: 42.7, dispersion: "13m" },
+                { range: 3300, elevation: 900, timeOfFlight: 41.9, dispersion: "15m" },
+                { range: 3400, elevation: 870, timeOfFlight: 41.1, dispersion: "16m" },
+                { range: 3500, elevation: 838, timeOfFlight: 40.2, dispersion: "18m" },
+                { range: 3600, elevation: 802, timeOfFlight: 39.2, dispersion: "19m" },
+                { range: 3700, elevation: 763, timeOfFlight: 38.0, dispersion: "0m" }
+            ]
         }
     }
 };
@@ -1311,6 +1487,9 @@ class MortarCalculator {
                     break;
                 case 'A-832AY':
                     shellText = texts["A832AYShell"];
+                    break;
+                case 'C-832C':
+                    shellText = texts["C832CShell"];
                     break;
                 default:
                     shellText = texts.heShell;
