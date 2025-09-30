@@ -134,7 +134,7 @@ function updateLanguageDisplay() {
     if (window.mortarCalculator && window.mortarCalculator.updateShellInfo) {
         window.mortarCalculator.updateShellInfo();
         // Update preset button statuses with new language (exclude clear button)
-        for (let i = 1; i <= 10; i++) {
+        for (let i = 1; i <= 9; i++) {
             window.mortarCalculator.updatePresetButtonStatus(i);
         }
     }
@@ -2170,7 +2170,7 @@ class MortarCalculator {
         }
 
         // Update all button statuses (exclude clear button)
-        for (let i = 1; i <= 10; i++) {
+        for (let i = 1; i <= 9; i++) {
             this.updatePresetButtonStatus(i);
         }
     }
@@ -2217,12 +2217,12 @@ class MortarCalculator {
             input.classList.remove('error', 'success');
         });
 
-        // Clear all saved target presets (1-10)
+        // Clear all saved target presets (1-9)
         this.targetPresets = {};
         localStorage.removeItem('mortarTargetPresets');
 
         // Update all preset button statuses to show "Empty"
-        for (let i = 1; i <= 10; i++) {
+        for (let i = 1; i <= 9; i++) {
             this.updatePresetButtonStatus(i);
         }
         
@@ -2250,7 +2250,7 @@ class MortarCalculator {
         }
         
         // Check each preset for matching values
-        for (let i = 1; i <= 10; i++) {
+        for (let i = 1; i <= 9; i++) {
             const preset = this.targetPresets[i];
             if (preset && 
                 preset.x === currentX && 
