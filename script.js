@@ -53,7 +53,9 @@ const LANGUAGE_DATA = {
         calculateRings: "คำนวณ RING",
         availableRings: "Ring ที่ใช้ได้:",
         outOfRange: "เกินระยะ",
-        noRingsAvailable: "ไม่มี Ring ที่ใช้ได้สำหรับระยะนี้"
+        noRingsAvailable: "ไม่มี Ring ที่ใช้ได้สำหรับระยะนี้",
+        numpadReference: "🎯 Numpad Reference",
+        numpadInstructions: "กดเลข 1-9 เพื่อปรับพิกัดตามตำแหน่ง Numpad (ต้องมีเลขในพิกัด 3 ตัวขึ้นไป)"
     },
     en: {
         title: "Mortar Calculator",
@@ -108,7 +110,9 @@ const LANGUAGE_DATA = {
         calculateRings: "Calculate RING",
         availableRings: "Available Rings:",
         outOfRange: "Out of Range",
-        noRingsAvailable: "No rings available for this range"
+        noRingsAvailable: "No rings available for this range",
+        numpadReference: "🎯 Numpad Reference",
+        numpadInstructions: "Press 1-9 to adjust coordinates according to Numpad position (requires at least 3 digits in coordinates)"
     }
 };
 
@@ -1318,6 +1322,9 @@ class MortarCalculator {
         // Preset elements
         this.presetButtons = document.querySelectorAll('.preset-btn');
         
+        // Numpad elements
+        this.numpadButtons = document.querySelectorAll('.numpad-btn');
+        
         // Apply 5-digit restriction to coordinate inputs
         this.restrictToFiveDigits(this.weaponX);
         this.restrictToFiveDigits(this.weaponY);
@@ -1343,6 +1350,10 @@ class MortarCalculator {
                 // Check and update active preset status for target inputs only
                 if (input === this.targetX || input === this.targetY || input === this.targetAlt) {
                     this.updateActivePresetStatus();
+                }
+                // Update numpad highlight when target coordinates change
+                if (input === this.targetX || input === this.targetY) {
+                    this.updateNumpadHighlight();
                 }
                 if (this.validateInputs()) {
                     this.calculate();
@@ -1469,6 +1480,15 @@ class MortarCalculator {
                 });
             }
         });
+
+        // Numpad Reference buttons
+        this.numpadButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const numpadValue = parseInt(btn.dataset.numpad);
+                this.applyNumpadReference(numpadValue);
+            });
+        });
     }
 
     loadInitialData() {
@@ -1476,6 +1496,7 @@ class MortarCalculator {
         this.createChargeTabs();
         this.loadBallisticData();
         this.updateGridReferences();
+        this.updateNumpadHighlight(); // Initialize numpad highlighting
         this.setupDeviceSpecificUI();
     }
 
@@ -2104,6 +2125,157 @@ class MortarCalculator {
         this.showMessage(`${currentLanguage === 'th' ? 'เลือก Ring' : 'Selected Ring'} ${ringNumber}`, 'success');
     }
 
+    // Apply Numpad Reference values to target coordinates
+    applyNumpadReference(numpadValue) {
+        // Check if target coordinates have at least 3 digits
+        if (!this.targetX.value || !this.targetY.value) {
+            this.showError(currentLanguage === 'th' ? 
+                'กรุณากรอกพิกัดเป้าหมาย X และ Y ก่อน' : 
+                'Please enter target X and Y coordinates first');
+            return;
+        }
+
+        const currentX = this.targetX.value.toString();
+        const currentY = this.targetY.value.toString();
+
+        // Check minimum 3 digits requirement
+        if (currentX.length < 3 || currentY.length < 3) {
+            this.showError(currentLanguage === 'th' ? 
+                'พิกัดต้องมีตัวเลขอย่างน้อย 3 ตัวขึ้นไป' : 
+                'Coordinates must have at least 3 digits');
+            return;
+        }
+
+        // Define Numpad Reference values
+        const numpadMap = {
+            1: { x: 15, y: 15 },
+            2: { x: 50, y: 15 },
+            3: { x: 85, y: 15 },
+            4: { x: 15, y: 50 },
+            5: { x: 50, y: 50 },
+            6: { x: 85, y: 50 },
+            7: { x: 15, y: 85 },
+            8: { x: 50, y: 85 },
+            9: { x: 85, y: 85 }
+        };
+
+        const newValues = numpadMap[numpadValue];
+        if (!newValues) return;
+
+        let newX, newY;
+
+        // Process X coordinate
+        if (currentX.length === 3) {
+            // Add 2 digits at the end
+            newX = currentX + newValues.x.toString().padStart(2, '0');
+        } else if (currentX.length === 4) {
+            // Replace 4th digit and add 5th digit
+            newX = currentX.substring(0, 3) + newValues.x.toString().padStart(2, '0');
+        } else if (currentX.length === 5) {
+            // Replace 4th and 5th digits
+            newX = currentX.substring(0, 3) + newValues.x.toString().padStart(2, '0');
+        } else {
+            // More than 5 digits - just replace last 2 digits
+            newX = currentX.substring(0, currentX.length - 2) + newValues.x.toString().padStart(2, '0');
+        }
+
+        // Process Y coordinate
+        if (currentY.length === 3) {
+            // Add 2 digits at the end
+            newY = currentY + newValues.y.toString().padStart(2, '0');
+        } else if (currentY.length === 4) {
+            // Replace 4th digit and add 5th digit
+            newY = currentY.substring(0, 3) + newValues.y.toString().padStart(2, '0');
+        } else if (currentY.length === 5) {
+            // Replace 4th and 5th digits
+            newY = currentY.substring(0, 3) + newValues.y.toString().padStart(2, '0');
+        } else {
+            // More than 5 digits - just replace last 2 digits
+            newY = currentY.substring(0, currentY.length - 2) + newValues.y.toString().padStart(2, '0');
+        }
+
+        // Ensure we don't exceed 5 digits (99999 maximum) but preserve leading zeros
+        const maxX = Math.min(parseInt(newX), 99999);
+        const maxY = Math.min(parseInt(newY), 99999);
+        
+        // Pad with zeros to maintain original length or minimum required length
+        const targetLengthX = Math.max(currentX.length, newX.length);
+        const targetLengthY = Math.max(currentY.length, newY.length);
+        
+        newX = maxX.toString().padStart(Math.min(targetLengthX, 5), '0');
+        newY = maxY.toString().padStart(Math.min(targetLengthY, 5), '0');
+
+        // Update the input fields
+        this.targetX.value = newX;
+        this.targetY.value = newY;
+
+        // Trigger update events
+        this.updateGridReferences();
+        this.updateActivePresetStatus();
+
+        // Auto-calculate if inputs are valid
+        if (this.validateInputs()) {
+            this.calculate();
+        }
+
+        // Update numpad highlighting
+        this.updateNumpadHighlight();
+
+        // Show success message
+        this.showMessage(currentLanguage === 'th' ? 
+            `ปรับพิกัดตาม Numpad ${numpadValue} เรียบร้อยแล้ว` : 
+            `Applied Numpad ${numpadValue} reference successfully`, 'success');
+    }
+
+    // Update numpad highlighting based on current coordinates
+    updateNumpadHighlight() {
+        // Clear all highlights first
+        this.numpadButtons.forEach(btn => {
+            btn.classList.remove('numpad-active');
+        });
+
+        // Check if we have target coordinates
+        if (!this.targetX.value || !this.targetY.value) {
+            return;
+        }
+
+        const currentX = this.targetX.value.toString();
+        const currentY = this.targetY.value.toString();
+
+        // Need at least 4 digits to check last 2 digits
+        if (currentX.length < 4 || currentY.length < 4) {
+            return;
+        }
+
+        // Get last 2 digits from both coordinates
+        const lastTwoX = currentX.slice(-2);
+        const lastTwoY = currentY.slice(-2);
+
+        // Define the numpad mapping
+        const numpadMap = {
+            1: { x: '15', y: '15' },
+            2: { x: '50', y: '15' },
+            3: { x: '85', y: '15' },
+            4: { x: '15', y: '50' },
+            5: { x: '50', y: '50' },
+            6: { x: '85', y: '50' },
+            7: { x: '15', y: '85' },
+            8: { x: '50', y: '85' },
+            9: { x: '85', y: '85' }
+        };
+
+        // Find matching numpad button
+        for (let [numpad, coords] of Object.entries(numpadMap)) {
+            if (coords.x === lastTwoX && coords.y === lastTwoY) {
+                const matchingBtn = document.querySelector(`[data-numpad="${numpad}"]`);
+                if (matchingBtn) {
+                    matchingBtn.classList.add('numpad-active');
+                }
+                break;
+            }
+        }
+    }
+
     calculate() {
         if (!this.validateInputs()) {
             this.showError('Please fill in all fields with valid numbers (Grid: 0-99999, max 5 digits)');
@@ -2371,6 +2543,9 @@ class MortarCalculator {
         
         // Update active preset status
         this.updateActivePresetStatus();
+
+        // Update numpad highlight
+        this.updateNumpadHighlight();
 
         // Trigger calculation if inputs are valid
         if (this.validateInputs()) {

@@ -1358,6 +1358,160 @@ footer {
     }
 }
 
+/* Numpad Reference Styles */
+.numpad-reference {
+    background: rgba(59, 130, 246, 0.15);
+    border: 2px solid rgba(59, 130, 246, 0.4);
+    border-radius: 6px;
+    padding: 8px;
+    margin: 10px 0;
+}
+
+.numpad-reference h4 {
+    color: #3b82f6;
+    font-size: 0.75rem;
+    margin: 0 0 6px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+.numpad-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    margin-bottom: 6px;
+}
+
+.numpad-btn {
+    background: rgba(48, 54, 61, 0.8);
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 4px;
+    padding: 4px 2px;
+    color: #c9d1d9;
+    font-family: 'Consolas', monospace;
+    font-size: 0.65rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 32px;
+    position: relative;
+    overflow: hidden;
+}
+
+.numpad-btn:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.6);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.numpad-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+}
+
+.numpad-btn.numpad-active {
+    background: rgba(59, 130, 246, 0.4);
+    border-color: rgba(59, 130, 246, 0.8);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+    transform: translateY(-1px);
+}
+
+.numpad-btn.numpad-active .numpad-number {
+    color: #60a5fa;
+    text-shadow: 0 0 8px rgba(96, 165, 250, 0.8);
+}
+
+.numpad-btn.numpad-active .numpad-coords {
+    color: #93c5fd;
+}
+
+.numpad-number {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #3b82f6;
+    text-shadow: 0 0 3px rgba(59, 130, 246, 0.5);
+    margin-bottom: 1px;
+}
+
+.numpad-coords {
+    font-size: 0.5rem;
+    color: #8b949e;
+    text-align: center;
+    line-height: 1.1;
+}
+
+.numpad-instructions {
+    text-align: center;
+    margin-top: 4px;
+}
+
+.numpad-instructions small {
+    color: #8b949e;
+    font-size: 0.6rem;
+    line-height: 1.2;
+}
+
+/* Touch device support for numpad */
+.touch-device .numpad-btn {
+    min-height: 35px;
+    font-size: 0.65rem;
+}
+
+.touch-device .numpad-number {
+    font-size: 0.9rem;
+}
+
+/* Mobile adjustments for numpad */
+@media (max-width: 768px) {
+    .numpad-reference {
+        padding: 6px;
+        margin: 8px 0;
+    }
+    
+    .numpad-grid {
+        gap: 2px;
+    }
+    
+    .numpad-btn {
+        min-height: 28px;
+        padding: 3px 2px;
+        font-size: 0.6rem;
+    }
+    
+    .numpad-number {
+        font-size: 0.75rem;
+    }
+    
+    .numpad-coords {
+        font-size: 0.45rem;
+    }
+    
+    .numpad-instructions small {
+        font-size: 0.55rem;
+    }
+}
+
+/* Ultra small screens */
+@media (max-width: 480px) {
+    .numpad-btn {
+        min-height: 25px;
+        padding: 2px 1px;
+    }
+    
+    .numpad-number {
+        font-size: 0.7rem;
+    }
+    
+    .numpad-coords {
+        font-size: 0.4rem;
+    }
+}
+
 /*
  * =======================================================================
  * ไม่อนุญาตให้นำไปใช้เพื่อแสวงหาผลกำไรใดๆทั้งสิ้น
