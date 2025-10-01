@@ -1773,9 +1773,45 @@ class MortarCalculator {
         return (bearing + 360) % 360;
     }
 
-    // Convert degrees to mils (1 degree = 17.777... mils)
+    // กำหนดประเภทกระสุนตามระบบ mils
+    getShellMilliradianSystem() {
+        const russianShells = ['0-832Ay', 'A-832AY', 'C-832C'];
+        const natoShells = ['M821', 'M819', 'M853A1'];
+        
+        if (russianShells.includes(this.currentShell)) {
+            return 'russian'; // 6000 mils = 360°
+        } else if (natoShells.includes(this.currentShell)) {
+            return 'nato'; // 6400 mils = 360°
+        }
+        
+        // Default to NATO system
+        return 'nato';
+    }
+
+    // Convert degrees to mils based on shell type
     degreesToMils(degrees) {
-        return degrees * 17.777777777778;
+        const system = this.getShellMilliradianSystem();
+        
+        if (system === 'russian') {
+            // รัสเซีย: 6000 mils = 360°, ดังนั้น 1° = 16.6667 mils
+            return degrees * 16.666666666667;
+        } else {
+            // NATO: 6400 mils = 360°, ดังนั้น 1° = 17.7778 mils  
+            return degrees * 17.777777777778;
+        }
+    }
+
+    // Convert mils to degrees based on shell type
+    milsToDegrees(mils) {
+        const system = this.getShellMilliradianSystem();
+        
+        if (system === 'russian') {
+            // รัสเซีย: 6000 mils = 360°
+            return mils * 0.06; // 1 mil = 0.06°
+        } else {
+            // NATO: 6400 mils = 360°
+            return mils * 0.05625; // 1 mil = 0.05625°
+        }
     }
 
     // ค้นหาข้อมูลการยิงจากตาราง BALLISTIC_DATA ตามระยะทาง
@@ -2414,6 +2450,13 @@ class MortarCalculator {
             </div>
             <div class="info-item">
                 <strong>${currentLanguage === 'th' ? 'ประเภทมอร์ต้าร์:' : 'Mortar Type:'}</strong> ${this.currentMortarType === 'mod' ? 'MOD Adult Mortars' : 'Original Game'}
+            </div>
+            <div class="info-item mil-system-info">
+                <strong>🧭 ${currentLanguage === 'th' ? 'ระบบ Mils:' : 'Mils System:'}</strong> 
+                ${this.getShellMilliradianSystem() === 'russian' ? 
+                    `${currentLanguage === 'th' ? 'รัสเซีย' : 'Russian'} (6000 mils = 360°)` : 
+                    `NATO (6400 mils = 360°)`
+                }
             </div>
             ${wasAdjusted ? `
             <div class="info-item calculation-adjustment">

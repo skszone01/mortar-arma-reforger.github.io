@@ -1082,6 +1082,32 @@ footer {
     border: 1px dashed #30363d;
 }
 
+/* Mils System Information Styles */
+.mil-system-info {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.15), rgba(139, 69, 193, 0.15)) !important;
+    border: 2px solid rgba(168, 85, 247, 0.4) !important;
+    border-radius: 8px !important;
+    padding: 10px !important;
+    margin: 8px 0 !important;
+    text-align: center !important;
+}
+
+.mil-system-info strong {
+    color: #a855f7 !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important;
+    font-size: 1rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+
+/* Highlight mils values in results */
+.result-value:contains('mils') {
+    background: rgba(168, 85, 247, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
 /* Accuracy Warning Styles */
 .accuracy-warning {
     background: linear-gradient(135deg, rgba(255, 193, 7, 0.15), rgba(255, 152, 0, 0.15));
