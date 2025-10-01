@@ -72,12 +72,12 @@
                     <div class="coordinate-group">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="weapon-x" data-lang-key="gridX">Grid X (0-20000):</label>
-                                <input type="number" id="weapon-x" min="0" max="20000" step="1" placeholder="10000">
+                                <label for="weapon-x" data-lang-key="gridX">Grid X (0-99999):</label>
+                                <input type="number" id="weapon-x" min="0" max="99999" maxlength="5" step="1" placeholder="10000">
                             </div>
                             <div class="form-group">
-                                <label for="weapon-y" data-lang-key="gridY">Grid Y (0-20000):</label>
-                                <input type="number" id="weapon-y" min="0" max="20000" step="1" placeholder="10000">
+                                <label for="weapon-y" data-lang-key="gridY">Grid Y (0-99999):</label>
+                                <input type="number" id="weapon-y" min="0" max="99999" maxlength="5" step="1" placeholder="10000">
                             </div>
                         </div>
                         <div class="grid-display" id="weapon-grid-display">
@@ -117,12 +117,12 @@
                     <div class="coordinate-group">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="target-x" data-lang-key="gridX">Grid X (0-20000):</label>
-                                <input type="number" id="target-x" min="0" max="20000" step="1" placeholder="10500">
+                                <label for="target-x" data-lang-key="gridX">Grid X (0-99999):</label>
+                                <input type="number" id="target-x" min="0" max="99999" maxlength="5" step="1" placeholder="10500">
                             </div>
                             <div class="form-group">
-                                <label for="target-y" data-lang-key="gridY">Grid Y (0-20000):</label>
-                                <input type="number" id="target-y" min="0" max="20000" step="1" placeholder="9800">
+                                <label for="target-y" data-lang-key="gridY">Grid Y (0-99999):</label>
+                                <input type="number" id="target-y" min="0" max="99999" maxlength="5" step="1" placeholder="9800">
                             </div>
                         </div>
                         <div class="grid-display" id="target-grid-display">
@@ -240,6 +240,18 @@
 
                 <!-- Additional Info -->
                 <div class="additional-info" id="additional-info">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- RING Calculation Section -->
+            <section class="ring-section" id="ring-section">
+                <div class="ring-header">
+                    <h3 data-lang-key="ringTitle">Available Rings</h3>
+                    <button id="calculate-rings-btn" class="ring-calculate-button" data-lang-key="calculateRings">🎯 Calculate RING</button>
+                </div>
+                
+                <div class="ring-results" id="ring-results">
                     <!-- Will be populated by JavaScript -->
                 </div>
             </section>

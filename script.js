@@ -16,8 +16,8 @@ const LANGUAGE_DATA = {
         weapon: "อาวุธ",
         targetPosition: "🎯 ตำแหน่งเป้าหมาย", 
         target: "เป้าหมาย",
-        gridX: "Grid X (0-20000):",
-        gridY: "Grid Y (0-20000):",
+        gridX: "Grid X (0-99999):",
+        gridY: "Grid Y (0-99999):",
         gridReference: "Grid Reference:",
         gridWarning: "รูปแบบ Grid Reference ต้องเท่ากับในแผนเกม",
         altitude: "ระดับความสูง (m):",
@@ -47,7 +47,13 @@ const LANGUAGE_DATA = {
         presetLoadedMessage: "โหลดเป้าหมาย {0} เรียบร้อยแล้ว",
         clearTarget: "เคลียทั้งหมด",
         clearTargetMessage: "เคลียข้อมูลเป้าหมายและเป้าหมายที่บันทึกไว้ทั้งหมดเรียบร้อยแล้ว",
-        videoTutorial: "📺 วิดีโอสอนการใช้งาน"
+        videoTutorial: "📺 วิดีโอสอนการใช้งาน",
+        ringCalculation: "🎯 RING",
+        ringTitle: "Ring ที่สามารถยิงได้",
+        calculateRings: "คำนวณ RING",
+        availableRings: "Ring ที่ใช้ได้:",
+        outOfRange: "เกินระยะ",
+        noRingsAvailable: "ไม่มี Ring ที่ใช้ได้สำหรับระยะนี้"
     },
     en: {
         title: "Mortar Calculator",
@@ -65,8 +71,8 @@ const LANGUAGE_DATA = {
         weapon: "WEAPON",
         targetPosition: "🎯 Target Position",
         target: "TARGET", 
-        gridX: "Grid X (0-20000):",
-        gridY: "Grid Y (0-20000):",
+        gridX: "Grid X (0-99999):",
+        gridY: "Grid Y (0-99999):",
         gridReference: "Grid Reference:",
         gridWarning: "Grid Reference format matches in-game Map display",
         altitude: "Altitude (m):",
@@ -96,7 +102,13 @@ const LANGUAGE_DATA = {
         presetLoadedMessage: "Target {0} loaded successfully",
         clearTarget: "Clear All",
         clearTargetMessage: "All target data and saved presets cleared successfully",
-        videoTutorial: "📺 Video Tutorial"
+        videoTutorial: "📺 Video Tutorial",
+        ringCalculation: "🎯 RING",
+        ringTitle: "Available Rings",
+        calculateRings: "Calculate RING",
+        availableRings: "Available Rings:",
+        outOfRange: "Out of Range",
+        noRingsAvailable: "No rings available for this range"
     }
 };
 
@@ -136,6 +148,10 @@ function updateLanguageDisplay() {
         // Update preset button statuses with new language (exclude clear button)
         for (let i = 1; i <= 9; i++) {
             window.mortarCalculator.updatePresetButtonStatus(i);
+        }
+        // Refresh RING results if visible
+        if (window.mortarCalculator.ringSection && window.mortarCalculator.ringSection.classList.contains('show')) {
+            window.mortarCalculator.calculateAvailableRings();
         }
     }
 }
@@ -1294,18 +1310,35 @@ class MortarCalculator {
         this.chargeTabsEl = document.getElementById('charge-tabs');
         this.ballisticTbody = document.getElementById('ballistic-tbody');
         
+        // RING elements
+        this.ringSection = document.getElementById('ring-section');
+        this.calculateRingsBtn = document.getElementById('calculate-rings-btn');
+        this.ringResults = document.getElementById('ring-results');
+        
         // Preset elements
         this.presetButtons = document.querySelectorAll('.preset-btn');
+        
+        // Apply 5-digit restriction to coordinate inputs
+        this.restrictToFiveDigits(this.weaponX);
+        this.restrictToFiveDigits(this.weaponY);
+        this.restrictToFiveDigits(this.targetX);
+        this.restrictToFiveDigits(this.targetY);
     }
 
     bindEvents() {
         // Calculate button
         this.calculateBtn.addEventListener('click', () => this.calculate());
         
+        // RING calculate button
+        this.calculateRingsBtn.addEventListener('click', () => this.calculateAvailableRings());
+        
         // Real-time calculation and grid display update
         [this.weaponX, this.weaponY, this.weaponAlt, 
          this.targetX, this.targetY, this.targetAlt].forEach(input => {
             input.addEventListener('input', () => {
+                // Reset manual ring selection when inputs change
+                this.manualRingSelected = false;
+                
                 this.updateGridReferences();
                 // Check and update active preset status for target inputs only
                 if (input === this.targetX || input === this.targetY || input === this.targetAlt) {
@@ -1628,10 +1661,10 @@ class MortarCalculator {
                 input.classList.add('error');
                 isValid = false;
             } else {
-                // Validate grid coordinates are within 20km x 20km map
+                // Validate grid coordinates are within 5-digit maximum (0-99999)
                 if ((input === this.weaponX || input === this.targetX || 
                      input === this.weaponY || input === this.targetY) && 
-                    (parseInt(input.value) < 0 || parseInt(input.value) > 20000)) {
+                    (parseInt(input.value) < 0 || parseInt(input.value) > 99999 || input.value.length > 5)) {
                     input.classList.add('error');
                     isValid = false;
                 } else {
@@ -1641,6 +1674,31 @@ class MortarCalculator {
         });
         
         return isValid;
+    }
+
+    // Restrict input to maximum 5 digits for coordinate fields
+    restrictToFiveDigits(input) {
+        input.addEventListener('input', (e) => {
+            let value = e.target.value;
+            // Remove any non-numeric characters (except for number inputs, but just to be safe)
+            value = value.replace(/[^0-9]/g, '');
+            // Limit to 5 digits
+            if (value.length > 5) {
+                value = value.slice(0, 5);
+            }
+            e.target.value = value;
+        });
+        
+        // Also handle paste events
+        input.addEventListener('paste', (e) => {
+            setTimeout(() => {
+                let value = e.target.value.replace(/[^0-9]/g, '');
+                if (value.length > 5) {
+                    value = value.slice(0, 5);
+                }
+                e.target.value = value;
+            }, 10);
+        });
     }
 
     // Update grid reference displays
@@ -1889,9 +1947,166 @@ class MortarCalculator {
         };
     }
 
+    // Calculate available RING values that can reach the target distance
+    calculateAvailableRings() {
+        if (!this.validateInputs()) {
+            this.showError('กรุณากรอกข้อมูลให้ครบถ้วน');
+            return;
+        }
+
+        const weapon = {
+            x: parseInt(this.weaponX.value),
+            y: parseInt(this.weaponY.value),
+            alt: parseInt(this.weaponAlt.value)
+        };
+
+        const target = {
+            x: parseInt(this.targetX.value),
+            y: parseInt(this.targetY.value),
+            alt: parseInt(this.targetAlt.value)
+        };
+
+        const distance = this.calculateDistance(weapon.x, weapon.y, target.x, target.y);
+        const heightDiff = target.alt - weapon.alt;
+        
+        // Apply the same height adjustment formula as in calculate()
+        let adjustedDistance = distance;
+        const absoluteHeightDiff = Math.abs(heightDiff);
+        if (absoluteHeightDiff > 100) {
+            const excessHeight = absoluteHeightDiff - 100;
+            if (heightDiff > 0) {
+                adjustedDistance = distance + excessHeight;
+            } else {
+                adjustedDistance = distance - excessHeight;
+            }
+        }
+
+        const availableRings = this.getAvailableRingsForDistance(adjustedDistance);
+        this.displayRingResults(availableRings, adjustedDistance, distance !== adjustedDistance);
+        this.ringSection.classList.add('show');
+    }
+
+    // Get all available rings/charges and their effective ranges for current shell
+    getAvailableRingsForDistance(targetDistance) {
+        const shellData = BALLISTIC_DATA[this.currentMortarType]?.[this.currentShell];
+        if (!shellData) return [];
+
+        const rings = [];
+
+        Object.keys(shellData).forEach(charge => {
+            const chargeData = shellData[charge];
+            if (!chargeData || chargeData.length === 0) return;
+
+            // Filter out invalid data (dispersion = "0m")
+            const validData = chargeData.filter(item => item.dispersion !== "0m");
+            if (validData.length === 0) return;
+
+            const minRange = Math.min(...validData.map(item => item.range));
+            const maxRange = Math.max(...validData.map(item => item.range));
+
+            const ring = {
+                number: parseInt(charge),
+                minRange: minRange,
+                maxRange: maxRange,
+                canReach: targetDistance >= minRange && targetDistance <= maxRange,
+                data: validData
+            };
+
+            rings.push(ring);
+        });
+
+        return rings.sort((a, b) => a.number - b.number);
+    }
+
+    // Display RING calculation results
+    displayRingResults(rings, targetDistance, wasAdjusted) {
+        const texts = LANGUAGE_DATA[currentLanguage];
+        
+        if (rings.length === 0) {
+            this.ringResults.innerHTML = `
+                <div class="ring-no-data">
+                    ${texts.noRingsAvailable}
+                </div>
+            `;
+            return;
+        }
+
+        let html = '';
+        let availableCount = 0;
+
+        const currentRing = this.getCurrentRing();
+        
+        rings.forEach(ring => {
+            if (ring.canReach) {
+                availableCount++;
+                const isCurrentRing = currentRing === ring.number;
+                html += `
+                    <div class="ring-item available ${isCurrentRing ? 'current-ring' : ''}" data-ring="${ring.number}">
+                        <div class="ring-label">RING</div>
+                        <div class="ring-number">${ring.number}</div>
+                        <div class="ring-range">${ring.minRange}m - ${ring.maxRange}m</div>
+                    </div>
+                `;
+            } else {
+                // Only show out-of-range rings, not hide them completely
+                html += `
+                    <div class="ring-item out-of-range" data-ring="${ring.number}">
+                        <div class="ring-label">RING</div>
+                        <div class="ring-number">${ring.number}</div>
+                        <div class="ring-range">${texts.outOfRange}<br>${ring.minRange}m - ${ring.maxRange}m</div>
+                    </div>
+                `;
+            }
+        });
+
+        // Add summary information
+        const summaryText = wasAdjusted ? 
+            `${texts.availableRings} ${availableCount}/${rings.length} (${currentLanguage === 'th' ? 'ระยะปรับแล้ว' : 'Adjusted range'}: ${Math.round(targetDistance)}m)` :
+            `${texts.availableRings} ${availableCount}/${rings.length} (${Math.round(targetDistance)}m)`;
+
+        html = `
+            <div class="ring-summary" style="grid-column: 1 / -1; text-align: center; margin-bottom: 15px; padding: 10px; background: rgba(48, 54, 61, 0.3); border-radius: 6px; color: #fbbf24; font-weight: bold;">
+                ${summaryText}
+            </div>
+            ${html}
+        `;
+
+        this.ringResults.innerHTML = html;
+
+        // Add click events to available rings
+        this.ringResults.querySelectorAll('.ring-item.available').forEach(item => {
+            item.addEventListener('click', () => {
+                const ringNumber = parseInt(item.dataset.ring);
+                this.selectRing(ringNumber);
+            });
+        });
+    }
+
+    // Get the current ring being used
+    getCurrentRing() {
+        return this.currentCharge || 1; // Default to ring 1 if not set
+    }
+
+    // Select a specific ring and recalculate
+    selectRing(ringNumber) {
+        this.currentCharge = ringNumber;
+        this.manualRingSelected = true; // Flag to indicate manual selection
+        this.updateChargeTabsDisplay();
+        this.loadBallisticData();
+        
+        // Recalculate with selected ring
+        if (this.validateInputs()) {
+            this.calculate();
+        }
+
+        // Show success message
+        const texts = LANGUAGE_DATA[currentLanguage];
+        this.showMessage(`${currentLanguage === 'th' ? 'เลือก Ring' : 'Selected Ring'} ${ringNumber}`, 'success');
+    }
+
     calculate() {
         if (!this.validateInputs()) {
-            this.showError('Please fill in all fields with valid numbers (Grid: 0-20000)');
+            this.showError('Please fill in all fields with valid numbers (Grid: 0-99999, max 5 digits)');
             return;
         }
 
@@ -1937,11 +2152,13 @@ class MortarCalculator {
             calculationNote = `สูตรปรับแล้ว: ระยะทาง ${distance}m ${sign} ${rangeAdjustment}m = ${adjustedDistance}m, ความสูง ${adjustedHeightDiff}m (ตัดไว้ 100m)`;
         }
         
-        // เลือกประจุที่เหมาะสมตามระยะทางที่ปรับแล้ว
-        const optimalCharge = this.selectOptimalCharge(adjustedDistance);
-        if (optimalCharge !== this.currentCharge) {
-            this.currentCharge = optimalCharge;
-            this.updateChargeTabsDisplay();
+        // เลือกประจุที่เหมาะสมตามระยะทางที่ปรับแล้ว (เว้นแต่ผู้ใช้เลือกเอง)
+        if (!this.manualRingSelected) {
+            const optimalCharge = this.selectOptimalCharge(adjustedDistance);
+            if (optimalCharge !== this.currentCharge) {
+                this.currentCharge = optimalCharge;
+                this.updateChargeTabsDisplay();
+            }
         }
         
         // ค้นหาข้อมูลการยิงจากตาราง BALLISTIC_DATA ใช้ระยะทางที่ปรับแล้ว
@@ -1996,6 +2213,13 @@ class MortarCalculator {
         this.updateAdditionalInfo(results);
 
         this.resultsSection.classList.add('show');
+        
+        // Auto-show RING section when results are displayed
+        if (this.ringSection) {
+            this.ringSection.classList.add('show');
+            // Auto-calculate rings for convenience
+            setTimeout(() => this.calculateAvailableRings(), 100);
+        }
     }
 
     updateAdditionalInfo(results) {
