@@ -201,6 +201,7 @@ header {
     gap: 10px;
     flex-wrap: wrap;
     justify-content: center;
+    margin-top: 8px; /* เว้นบรรทัดน้อยกว่า <br> */
 }
 
 .lang-btn {
