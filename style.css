@@ -228,6 +228,16 @@ header {
     box-shadow: 0 0 15px rgba(88, 166, 255, 0.4);
 }
 
+/* Flag Icon Styles */
+.flag-icon {
+    width: 20px;
+    height: 15px;
+    margin-right: 6px;
+    vertical-align: middle;
+    border-radius: 2px;
+    object-fit: cover;
+}
+
 /* Responsive Header */
 @media (max-width: 768px) {
     header {
