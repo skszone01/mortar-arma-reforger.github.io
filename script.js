@@ -116,7 +116,7 @@ const LANGUAGE_DATA = {
     }
 };
 
-let currentLanguage = 'th'; // Default to Thai
+let currentLanguage = 'en'; // Default to English
 
 // Language switching functions
 function switchLanguage(lang) {
@@ -162,8 +162,8 @@ function updateLanguageDisplay() {
 
 // Initialize language system
 function initializeLanguage() {
-    // Get saved preference or default to Thai
-    const savedLang = localStorage.getItem('preferredLanguage') || 'th';
+    // Get saved preference or default to English
+    const savedLang = localStorage.getItem('preferredLanguage') || 'en';
     switchLanguage(savedLang);
     
     // Add event listeners to language buttons
