@@ -3,415 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARMA REFORGER - Mortar Calculator</title>
-    <link rel="stylesheet" href="./style.css">
+    <title>Redirecting...</title>
+    <!-- Meta refresh เพื่อ redirect ทันที -->
+    <meta http-equiv="refresh" content="0;url=https://skszone01.github.io/mortar">
+    <!-- Canonical link สำหรับ SEO -->
+    <link rel="canonical" href="https://skszone01.github.io/mortar">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f5f5f5;
+        }
+        .redirect-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .redirect-link {
+            color: #3498db;
+            text-decoration: none;
+        }
+        .redirect-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="header-content">
-                <h1>⚡ ARMA REFORGER</h1>
-                <p data-lang-key="title">Mortar Calculator</p>
-                <div class="header-credits">
-                    <p>
-                        🎥 <span data-lang-key="createdBy">Created by:</span> 
-                        <a href="https://www.youtube.com/@sittchanel" target="_blank" class="youtube-link">
-                            <span class="youtube-icon">📺</span>
-                            SITT CHANEL
-                        </a>
-                    </p>
-                </div>
-                <div class="language-selector">
-                    <button class="lang-btn" data-lang="th">
-                        <img src="./image/th.png" alt="Thai Flag" class="flag-icon"> ไทย
-                    </button>
-                    <button class="lang-btn active" data-lang="en">
-                        <img src="./image/eng.png" alt="English Flag" class="flag-icon"> English
-                    </button>
-                    <button class="lang-btn" data-lang="ja">
-                        <img src="./image/japan.png" alt="Japanese Flag" class="flag-icon"> 日本語
-                    </button>
-                    <button class="lang-btn" data-lang="zh">
-                        <img src="./image/china.png" alt="Chinese Flag" class="flag-icon"> 中文
-                    </button>
-                    <button class="lang-btn" data-lang="id">
-                        <img src="./image/indo.png" alt="Indonesian Flag" class="flag-icon"> Indonesia
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <main>
-            <!-- Mortar Type Selection -->
-            <section class="mortar-type-section">
-                <h2 data-lang-key="mortarType">🎯 Mortar Type</h2>
-                <div class="mortar-type-selector">
-                    <label class="type-option">
-                        <input type="radio" name="mortar-type" value="original" checked>
-                        <span class="checkmark"></span>
-                        <span class="label-text" data-lang-key="originalGame">Original Game</span>
-                    </label>
-                    <label class="type-option">
-                        <input type="radio" name="mortar-type" value="mod">
-                        <span class="checkmark"></span>
-                        <span class="label-text" data-lang-key="modMortars">[MOD] Adult Mortars</span>
-                    </label>
-                </div>
-            </section>
-
-            <!-- Shell Selection -->
-            <section class="shell-selection">
-                <h2 data-lang-key="shellType">💥 Shell Type</h2>
-                <div class="shell-buttons">
-                    <button class="shell-btn active" data-shell="M821">M821</button>
-                    <button class="shell-btn" data-shell="M819">M819</button>
-                    <button class="shell-btn" data-shell="M853A1">M853A1</button>
-                    <button class="shell-btn" data-shell="0-832Ay">0-832Ay</button>
-                    <button class="shell-btn" data-shell="A-832AY">A-832AY</button>
-                    <button class="shell-btn" data-shell="C-832C">C-832C</button>
-                </div>
-                <div class="shell-info">
-                    <span class="shell-type" data-lang-key="heShell">HE shell</span>
-                </div>
-            </section>
-
-            <!-- Input Section -->
-            <div class="input-section">
-                <div class="position-card weapon-position">
-                    <div class="card-header">
-                        <h3 data-lang-key="weaponPosition">📍 Weapon Position</h3>
-                        <div class="indicator" data-lang-key="weapon">WEAPON</div>
-                    </div>
-                    <div class="coordinate-group">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="weapon-x" data-lang-key="gridX">Grid X (0-99999):</label>
-                                <input type="number" id="weapon-x" min="0" max="99999" maxlength="5" step="1" placeholder="10000">
-                            </div>
-                            <div class="form-group">
-                                <label for="weapon-y" data-lang-key="gridY">Grid Y (0-99999):</label>
-                                <input type="number" id="weapon-y" min="0" max="99999" maxlength="5" step="1" placeholder="10000">
-                            </div>
-                        </div>
-                        <div class="grid-display" id="weapon-grid-display">
-                            <span class="grid-label" data-lang-key="gridReference">Grid Reference:</span>
-                            <span class="grid-value" id="weapon-grid-ref">-</span>
-                        </div>
-                        <div class="grid-warning">
-                            <span class="warning-icon">⚠️</span>
-                            <span class="warning-text" data-lang-key="gridWarning">Grid Reference format matches in-game display</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="weapon-alt" data-lang-key="altitude">Altitude (m):</label>
-                        <input type="number" id="weapon-alt" step="1" placeholder="250">
-                    </div>
-                    
-                    <!-- How to Find Coordinates Guide -->
-                    <div class="coordinate-guide">
-                        <h4 class="guide-toggle" data-lang-key="coordinateGuide">📍 วิธีหาพิกัดเบื้องต้น (click)</h4>
-                        <div class="guide-content" id="guide-content">
-                            <div class="guide-image">
-                                <img src="./image/mortar-tutor.png" alt="Coordinate Guide" class="guide-img">
-                            </div>
-                            <div class="guide-text">
-                                <p data-lang-key="guideScale">🔍 <strong>มาตราส่วน: 1mm = 10</strong></p>
-                                <ul class="guide-steps">
-                                    <li data-lang-key="guideStep1">1. เปิดแผนที่ในเกม (M)</li>
-                                    <li data-lang-key="guideStep2">2. ใช้ไม้บรรทัดวัดจากขีดสเกลด้านล่าง</li>
-                                    <li data-lang-key="guideStep3">3. ดูพิกัด X (เขียว) และ Y (แดง) ที่มุมล่างขวา</li>
-                                    <li data-lang-key="guideStep4">4. ในรูปตัวอย่าง: X04730, Y06970</li>
-                                    <li data-lang-key="guideStep5">5. กรอกพิกัดลงในช่อง Grid X และ Grid Y</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- YouTube Video Tutorial -->
-                    <div class="youtube-tutorial">
-                        <h4 data-lang-key="videoTutorial">📺 Video Tutorial</h4>
-                        <div class="video-container">
-                            <iframe 
-                                src="https://www.youtube.com/embed/2SOM4WFleM0" 
-                                title="Mortar Calculator Tutorial"
-                                frameborder="0" 
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                allowfullscreen>
-                            </iframe>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="position-card target-position">
-                    <div class="card-header">
-                        <h3 data-lang-key="targetPosition">🎯 Target Position</h3>
-                        <div class="indicator" data-lang-key="target">TARGET</div>
-                    </div>
-                    <div class="coordinate-group">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="target-x" data-lang-key="gridX">Grid X (0-99999):</label>
-                                <input type="number" id="target-x" min="0" max="99999" maxlength="5" step="1" placeholder="10500">
-                            </div>
-                            <div class="form-group">
-                                <label for="target-y" data-lang-key="gridY">Grid Y (0-99999):</label>
-                                <input type="number" id="target-y" min="0" max="99999" maxlength="5" step="1" placeholder="9800">
-                            </div>
-                        </div>
-                        <div class="grid-display" id="target-grid-display">
-                            <span class="grid-label" data-lang-key="gridReference">Grid Reference:</span>
-                            <span class="grid-value" id="target-grid-ref">-</span>
-                        </div>
-                        <div class="grid-warning">
-                            <span class="warning-icon">⚠️</span>
-                            <span class="warning-text" data-lang-key="gridWarning">Grid Reference format matches in-game display</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="target-alt" data-lang-key="altitude">Altitude (m):</label>
-                        <input type="number" id="target-alt" step="1" placeholder="300">
-                    </div>
-                    
-                    <!-- Target Presets -->
-                    <div class="target-presets">
-                        <h4 data-lang-key="targetPresets">🎯 Target Presets</h4>
-                        <div class="preset-buttons">
-                            <button class="preset-btn" data-preset="1" title="Save/Load Target 1">
-                                <span class="preset-number">1</span>
-                                <span class="preset-status">Empty</span>
-                            </button>
-                            <button class="preset-btn" data-preset="2" title="Save/Load Target 2">
-                                <span class="preset-number">2</span>
-                                <span class="preset-status">Empty</span>
-                            </button>
-                            <button class="preset-btn" data-preset="3" title="Save/Load Target 3">
-                                <span class="preset-number">3</span>
-                                <span class="preset-status">Empty</span>
-                            </button>
-                            <button class="preset-btn" data-preset="4" title="Save/Load Target 4">
-                                <span class="preset-number">4</span>
-                                <span class="preset-status">Empty</span>
-                            </button>
-                            <button class="preset-btn" data-preset="5" title="Save/Load Target 5">
-                                <span class="preset-number">5</span>
-                                <span class="preset-status">Empty</span>
-                            </button>
-                            <button class="preset-btn" data-preset="6" title="Save/Load Target 6">
-                                <span class="preset-number">6</span>
-                                <span class="preset-status">Empty</span>
-                            </button>
-                            <button class="preset-btn" data-preset="7" title="Save/Load Target 7">
-                                <span class="preset-number">7</span>
-                                <span class="preset-status">Empty</span>
-                            </button>
-                            <button class="preset-btn" data-preset="8" title="Save/Load Target 8">
-                                <span class="preset-number">8</span>
-                                <span class="preset-status">Empty</span>
-                            </button>
-                            <button class="preset-btn" data-preset="9" title="Save/Load Target 9">
-                                <span class="preset-number">9</span>
-                                <span class="preset-status">Empty</span>
-                            </button>
-                            <button class="preset-btn clear-btn" data-preset="clear" title="Clear All Target Data & Saved Presets">
-                                <span class="preset-number">✗</span>
-                                <span class="preset-status">Clear</span>
-                            </button>
-                        </div>
-                        <div class="preset-instructions">
-                            <small data-lang-key="presetInstructions" class="desktop-instructions">Click to load • Right-click to save</small>
-                            <small class="mobile-instructions" style="display: none;">Tap: Load • Long press: Save</small>
-                        </div>
-                    </div>
-                    
-                    <!-- Numpad Reference -->
-                    <div class="numpad-reference">
-                        <h4 data-lang-key="numpadReference">🎯 Numpad Reference</h4>
-                        <div class="numpad-grid">
-                            <button class="numpad-btn" data-numpad="7" title="Numpad 7 | XXX 15 | YYY 85">
-                                <span class="numpad-number">7</span>
-                                <span class="numpad-coords">15 | 85</span>
-                            </button>
-                            <button class="numpad-btn" data-numpad="8" title="Numpad 8 | XXX 50 | YYY 85">
-                                <span class="numpad-number">8</span>
-                                <span class="numpad-coords">50 | 85</span>
-                            </button>
-                            <button class="numpad-btn" data-numpad="9" title="Numpad 9 | XXX 85 | YYY 85">
-                                <span class="numpad-number">9</span>
-                                <span class="numpad-coords">85 | 85</span>
-                            </button>
-                            <button class="numpad-btn" data-numpad="4" title="Numpad 4 | XXX 15 | YYY 50">
-                                <span class="numpad-number">4</span>
-                                <span class="numpad-coords">15 | 50</span>
-                            </button>
-                            <button class="numpad-btn" data-numpad="5" title="Numpad 5 | XXX 50 | YYY 50">
-                                <span class="numpad-number">5</span>
-                                <span class="numpad-coords">50 | 50</span>
-                            </button>
-                            <button class="numpad-btn" data-numpad="6" title="Numpad 6 | XXX 85 | YYY 50">
-                                <span class="numpad-number">6</span>
-                                <span class="numpad-coords">85 | 50</span>
-                            </button>
-                            <button class="numpad-btn" data-numpad="1" title="Numpad 1 | XXX 15 | YYY 15">
-                                <span class="numpad-number">1</span>
-                                <span class="numpad-coords">15 | 15</span>
-                            </button>
-                            <button class="numpad-btn" data-numpad="2" title="Numpad 2 | XXX 50 | YYY 15">
-                                <span class="numpad-number">2</span>
-                                <span class="numpad-coords">50 | 15</span>
-                            </button>
-                            <button class="numpad-btn" data-numpad="3" title="Numpad 3 | XXX 85 | YYY 15">
-                                <span class="numpad-number">3</span>
-                                <span class="numpad-coords">85 | 15</span>
-                            </button>
-                        </div>
-                        <div class="numpad-instructions">
-                            <small data-lang-key="numpadInstructions">กดเลข 1-9 เพื่อปรับพิกัดตามตำแหน่ง Numpad (ต้องมีเลขในพิกัด 3 ตัวขึ้นไป)</small>
-                        </div>
-
-                        <!-- Elevation Offset -->
-                        <div class="elevation-offset-section">
-                            <h4 data-lang-key="elevationOffset">⚙️ ชดเชยมุมยกปืน</h4>
-                            <div class="offset-instructions">
-                                <small data-lang-key="offsetInstructions">ปรับมุมยกปืนเมื่อกระสุนไปไม่ถึงเป้าหมาย (-) หรือไกลเกินเป้าหมาย (+)</small>
-                            </div>
-                            <div class="offset-buttons">
-                                <button class="offset-btn offset-negative" data-offset="-20">-20</button>
-                                <button class="offset-btn offset-negative" data-offset="-10">-10</button>
-                                <button class="offset-btn offset-negative" data-offset="-5">-5</button>
-                                <button class="offset-btn offset-negative" data-offset="-1">-1</button>
-                                <button class="offset-btn offset-clear" data-offset="clear" data-lang-key="clearOffset">ล้าง</button>
-                                <button class="offset-btn offset-positive" data-offset="+1">+1</button>
-                                <button class="offset-btn offset-positive" data-offset="+5">+5</button>
-                                <button class="offset-btn offset-positive" data-offset="+10">+10</button>
-                                <button class="offset-btn offset-positive" data-offset="+20">+20</button>
-                            </div>
-                            <div class="offset-status">
-                                <small>
-                                    <span data-lang-key="currentOffset">ค่าออฟเซ็ต:</span>
-                                    <span id="current-offset-value">0</span> mils
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <button id="calculate-btn" class="calculate-button" data-lang-key="calculate">🧮 CALCULATE</button>
-
-            <!-- Results Section -->
-            <section class="results-section" id="results-section">
-                <h2 data-lang-key="firingSolution">📊 FIRING SOLUTION</h2>
-                <div class="result-grid">
-                    <div class="result-item distance-result">
-                        <label data-lang-key="distance">Distance:</label>
-                        <span id="distance">-</span>
-                    </div>
-                    <div class="result-item azimuth-result">
-                        <label data-lang-key="azimuth">Azimuth:</label>
-                        <span id="azimuth">-</span>
-                    </div>
-                    <div class="result-item elevation-result">
-                        <label data-lang-key="elevation">Elevation:</label>
-                        <span id="elevation">-</span>
-                    </div>
-                    <div class="result-item charge-result">
-                        <label data-lang-key="charge">Charge:</label>
-                        <span id="charge">-</span>
-                    </div>
-                    <div class="result-item time-result">
-                        <label data-lang-key="timeOfFlight">Time of Flight:</label>
-                        <span id="time-flight">-</span>
-                    </div>
-                    <div class="result-item height-result">
-                        <label data-lang-key="heightDifference">Height Difference:</label>
-                        <span id="height-diff">-</span>
-                    </div>
-                </div>
-
-                <!-- Additional Info -->
-                <div class="additional-info" id="additional-info">
-                    <!-- Will be populated by JavaScript -->
-                </div>
-            </section>
-
-            <!-- RING Calculation Section -->
-            <section class="ring-section" id="ring-section">
-                <div class="ring-header">
-                    <h3 data-lang-key="ringTitle">Available Rings</h3>
-                    <button id="calculate-rings-btn" class="ring-calculate-button" data-lang-key="calculateRings">🎯 Calculate RING</button>
-                </div>
-                
-                <div class="ring-results" id="ring-results">
-                    <!-- Will be populated by JavaScript -->
-                </div>
-            </section>
-
-            <!-- Ballistic Tables -->
-            <section class="ballistic-section">
-                <h2 data-lang-key="ballisticData">📋 Ballistic Data</h2>
-                <div class="charge-tabs" id="charge-tabs">
-                    <!-- Will be populated by JavaScript -->
-                </div>
-                <div class="table-container">
-                    <table id="ballistic-table">
-                        <thead>
-                            <tr>
-                                <th data-lang-key="range">Range (m)</th>
-                                <th data-lang-key="elevationMil">Elevation (mil)</th>
-                                <th data-lang-key="timeSec">Time (sec)</th>
-                                <th data-lang-key="dispersion">Dispersion</th>
-                            </tr>
-                        </thead>
-                        <tbody id="ballistic-tbody">
-                            <!-- Will be populated by JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </main>
-
-        <footer>
-            <p data-lang-key="footer">ARMA REFORGER Mortar Calculator v1.0 | Based on in-game ballistic data</p>
-            <div class="credits">
-                <p>ไม่อนุญาตให้นำไปใช้เพื่อแสวงหาผลกำไรใดๆทั้งสิ้น</p>
-                <p>หากนำไปใช้งานในส่วนอื่น ใส่เครดิต <strong>Youtube : Sitt Chanel</strong> ให้ด้วย</p>
-                <p>Not allowed to be used for any commercial purposes.</p>
-                <p>If used in other projects, please credit <strong>Youtube : Sitt Chanel</strong></p>
-            </div>
-            
-            <!-- Visitor Counter -->
-            <div class="visitor-counter">
-                <h4 data-lang-key="visitorStats">📊 Visitor Statistics</h4>
-                <div class="counter-container">
-                    <!-- Flag Counter -->
-                    <div class="flag-counter">
-                        <a href="https://info.flagcounter.com/h9mK">
-                            <img src="https://s11.flagcounter.com/count2/h9mK/bg_FFFFFF/txt_000000/border_CCCCCC/columns_2/maxflags_10/viewers_0/labels_0/pageviews_0/flags_0/percent_0/" 
-                                 alt="Flag Counter" 
-                                 border="0">
-                        </a>
-                    </div>
-                    
-                    <!-- Simple Local Counter -->
-                    <div class="local-counter">
-                        <div class="counter-item">
-                            <span class="counter-label" data-lang-key="totalVisits">Total Visits:</span>
-                            <span class="counter-value" id="visit-count">Loading...</span>
-                        </div>
-                        <div class="counter-item">
-                            <span class="counter-label" data-lang-key="todayVisits">Today:</span>
-                            <span class="counter-value" id="today-count">Loading...</span>
-                        </div>
-                        <div class="counter-item">
-                            <span class="counter-label" data-lang-key="onlineNow">Online Now:</span>
-                            <span class="counter-value" id="online-count">1</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </footer>
+    <div class="redirect-container">
+        <h1>Redirecting...</h1>
+        <div class="spinner"></div>
+        <p>You are being redirected to the new website</p>
+        <p>If you are not redirected automatically, please click: 
+            <a href="https://skszone01.github.io/mortar" class="redirect-link">Click here</a>
+        </p>
     </div>
 
-    <script src="script.js"></script>
+    <script>
+        // JavaScript redirect เป็นตัวสำรอง
+        setTimeout(function() {
+            window.location.href = "https://skszone01.github.io/mortar";
+        }, 1000);
+        
+        // ถ้า meta refresh ไม่ทำงาน ให้ redirect ทันที
+        if (window.location.href.indexOf("skszone01.github.io/mortar") === -1) {
+            window.location.replace("https://skszone01.github.io/mortar");
+        }
+    </script>
 </body>
 </html>

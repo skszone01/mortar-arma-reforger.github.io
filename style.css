@@ -44,8 +44,7 @@ body {
     margin-bottom: 8px;
     overflow-x: auto;
     padding-bottom: 2px;
-    flex-wrap: wrap;
-    justify-content: center;
+    flex-wrap: nowrap;
 }
 
 .preset-btn {
@@ -656,11 +655,7 @@ header {
 .azimuth-result span { color: #ff6b6b; }
 
 .elevation-result { border-left-color: #4ecdc4; }
-.elevation-result span { 
-    color: #4ecdc4;
-    white-space: pre-line;
-    line-height: 1.4;
-}
+.elevation-result span { color: #4ecdc4; }
 
 .charge-result { border-left-color: #238636; }
 .charge-result span { color: #238636; }
@@ -777,72 +772,6 @@ footer {
     border-top: 1px solid #30363d;
 }
 
-/* Visitor Counter Styles */
-.visitor-counter {
-    margin-top: 20px;
-    padding: 20px;
-    background: #161b22;
-    border: 1px solid #30363d;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.visitor-counter h3 {
-    margin: 0 0 15px 0;
-    color: #58a6ff;
-    font-size: 1.1rem;
-    font-weight: 600;
-    text-align: center;
-}
-
-.counter-container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
-}
-
-.flag-counter {
-    text-align: center;
-}
-
-.flag-counter img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.local-counter {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    max-width: 400px;
-    background: #0d1117;
-    border: 1px solid #21262d;
-    border-radius: 6px;
-    padding: 15px;
-}
-
-.counter-item {
-    text-align: center;
-    flex: 1;
-}
-
-.counter-item .label {
-    color: #8b949e;
-    font-size: 0.8rem;
-    margin-bottom: 5px;
-    display: block;
-}
-
-.counter-item .value {
-    color: #58a6ff;
-    font-size: 1.2rem;
-    font-weight: 600;
-    display: block;
-}
-
 /* Tablet Styles */
 @media (min-width: 768px) {
     .container {
@@ -916,29 +845,12 @@ footer {
     }
 }
 
-/* Tablet and smaller screens - 2 rows layout */
-@media (max-width: 640px) {
-    .preset-buttons {
-        gap: 3px;
-        flex-wrap: wrap;
-        justify-content: center;
-        overflow-x: visible;
-        max-width: 100%;
-    }
-    
-    .preset-btn {
-        flex: 1 1 calc(20% - 3px); /* 5 buttons per row */
-        min-width: 40px;
-        max-width: 60px;
-    }
-}
-
 /* Mobile adjustments for preset buttons */
 @media (max-width: 480px) {
     .preset-buttons {
         gap: 3px;
         flex-wrap: wrap;
-        justify-content: center;
+        justify-content: flex-start;
         overflow-x: visible;
         max-width: 100%;
     }
@@ -1039,107 +951,6 @@ footer {
 
 .desktop-instructions {
     color: #6e7681;
-}
-
-/* Coordinate Guide Section */
-.coordinate-guide {
-    margin-top: 15px;
-    background: rgba(34, 197, 94, 0.1);
-    border: 2px solid rgba(34, 197, 94, 0.3);
-    border-radius: 10px;
-    padding: 12px;
-}
-
-.coordinate-guide h4 {
-    color: #22c55e;
-    font-size: 0.9rem;
-    margin: 0 0 10px 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-align: center;
-}
-
-.guide-toggle {
-    cursor: pointer;
-    user-select: none;
-    transition: all 0.3s ease;
-    padding: 8px;
-    border-radius: 6px;
-}
-
-.guide-toggle:hover {
-    background: rgba(34, 197, 94, 0.2);
-    transform: translateY(-1px);
-}
-
-.guide-content {
-    display: none;
-    flex-direction: column;
-    gap: 15px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.guide-content.show {
-    display: flex;
-}
-
-.guide-image {
-    width: 100%;
-    max-width: none;
-}
-
-.guide-img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    border: 2px solid rgba(34, 197, 94, 0.3);
-    max-height: 500px;
-    object-fit: contain;
-}
-
-.guide-text {
-    width: 100%;
-}
-
-.guide-text p {
-    color: #22c55e;
-    font-weight: bold;
-    margin-bottom: 10px;
-    font-size: 0.9rem;
-}
-
-.guide-steps {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.guide-steps li {
-    color: #c9d1d9;
-    font-size: 0.85rem;
-    line-height: 1.4;
-    margin-bottom: 6px;
-    padding-left: 10px;
-}
-
-/* Mobile adjustments for coordinate guide */
-@media (max-width: 768px) {
-    .guide-content {
-        gap: 10px;
-    }
-    
-    .guide-img {
-        max-height: 300px;
-    }
-    
-    .guide-steps li {
-        font-size: 0.8rem;
-    }
-    
-    .guide-text p {
-        font-size: 0.85rem;
-    }
 }
 
 /* YouTube Tutorial Section */
@@ -1723,184 +1534,6 @@ footer {
     }
 }
 
-/* Elevation Offset Styles */
-.elevation-offset-section {
-    background: rgba(139, 69, 19, 0.15);
-    border: 2px solid rgba(139, 69, 19, 0.4);
-    border-radius: 8px;
-    padding: 8px;
-    margin: 12px 0 0 0;
-}
-
-.elevation-offset-section h4 {
-    color: #cd853f;
-    font-size: 0.8rem;
-    margin: 0 0 6px 0;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    text-align: center;
-}
-
-.offset-instructions {
-    text-align: center;
-    margin-bottom: 8px;
-}
-
-.offset-instructions small {
-    color: #8b949e;
-    font-size: 0.6rem;
-    line-height: 1.2;
-}
-
-.offset-buttons {
-    display: flex;
-    gap: 4px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 8px;
-}
-
-.offset-btn {
-    background: rgba(139, 69, 19, 0.3);
-    border: 2px solid rgba(139, 69, 19, 0.6);
-    color: #cd853f;
-    padding: 4px 6px;
-    border-radius: 6px;
-    font-size: 0.7rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    min-width: 42px;
-    min-height: 32px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.offset-btn:hover {
-    background: rgba(139, 69, 19, 0.5);
-    border-color: rgba(139, 69, 19, 0.8);
-    transform: translateY(-1px);
-}
-
-.offset-btn:active {
-    transform: translateY(0);
-}
-
-.offset-btn.offset-negative {
-    background: rgba(220, 38, 38, 0.3);
-    border-color: rgba(220, 38, 38, 0.6);
-    color: #ef4444;
-}
-
-.offset-btn.offset-negative:hover {
-    background: rgba(220, 38, 38, 0.5);
-    border-color: rgba(220, 38, 38, 0.8);
-}
-
-.offset-btn.offset-positive {
-    background: rgba(34, 197, 94, 0.3);
-    border-color: rgba(34, 197, 94, 0.6);
-    color: #22c55e;
-}
-
-.offset-btn.offset-positive:hover {
-    background: rgba(34, 197, 94, 0.5);
-    border-color: rgba(34, 197, 94, 0.8);
-}
-
-.offset-btn.offset-clear {
-    min-width: 50px;
-    font-weight: bold;
-}
-
-.offset-btn.offset-clear {
-    background: rgba(59, 130, 246, 0.3);
-    border-color: rgba(59, 130, 246, 0.6);
-    color: #3b82f6;
-}
-
-.offset-btn.offset-clear:hover {
-    background: rgba(59, 130, 246, 0.5);
-    border-color: rgba(59, 130, 246, 0.8);
-}
-
-.offset-btn.offset-active {
-    background: rgba(251, 191, 36, 0.4);
-    border-color: rgba(251, 191, 36, 0.8);
-    color: #fbbf24;
-    box-shadow: 0 0 8px rgba(251, 191, 36, 0.3);
-}
-
-.offset-status {
-    text-align: center;
-    margin-top: 4px;
-}
-
-.offset-status small {
-    color: #8b949e;
-    font-size: 0.6rem;
-}
-
-.offset-status #current-offset-value {
-    color: #fbbf24;
-    font-weight: bold;
-}
-
-/* Touch device support for offset buttons */
-.touch-device .offset-btn {
-    min-height: 30px;
-    font-size: 0.65rem;
-    padding: 5px 10px;
-}
-
-/* Mobile adjustments for offset */
-@media (max-width: 768px) {
-    .elevation-offset-section {
-        padding: 6px;
-        margin: 8px 0 0 0;
-    }
-    
-    .offset-buttons {
-        gap: 3px;
-    }
-    
-    .offset-btn {
-        min-width: 36px;
-        min-height: 28px;
-        padding: 3px 4px;
-        font-size: 0.65rem;
-    }
-    
-    .offset-btn.offset-clear {
-        min-width: 42px;
-    }
-    
-    .offset-instructions small {
-        font-size: 0.55rem;
-    }
-    
-    .offset-status small {
-        font-size: 0.55rem;
-    }
-}
-
-/* Ultra small screens for offset */
-@media (max-width: 480px) {
-    .offset-btn {
-        min-width: 32px;
-        min-height: 26px;
-        padding: 2px 3px;
-        font-size: 0.6rem;
-    }
-    
-    .offset-btn.offset-clear {
-        min-width: 38px;
-    }
-}
-
 /* Ultra small screens */
 @media (max-width: 480px) {
     .numpad-btn {
@@ -1914,39 +1547,6 @@ footer {
     
     .numpad-coords {
         font-size: 0.4rem;
-    }
-    
-    /* Visitor Counter Mobile Styles */
-    .visitor-counter {
-        padding: 15px;
-        margin-top: 15px;
-    }
-    
-    .visitor-counter h3 {
-        font-size: 1rem;
-        margin-bottom: 10px;
-    }
-    
-    .local-counter {
-        flex-direction: column;
-        gap: 10px;
-        padding: 10px;
-    }
-    
-    .counter-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 5px 0;
-    }
-    
-    .counter-item .label {
-        font-size: 0.75rem;
-        margin-bottom: 0;
-    }
-    
-    .counter-item .value {
-        font-size: 1rem;
     }
 }
 
